@@ -42,7 +42,7 @@ Meraki MR42/MR52 → OpenWrt 刷机工具包（macOS arm64 适配版）。
 **全程未拆机、未接串口** —— 诊断模式 telnet 即可完成，wiki 第 5 节（initramfs 内写 mtd8）不需要。
 
 新增实测坑（均已写进脚本+指南）：
-- `mtd erase` 在 `part_fill_badblockstats` 触发内核 Oops，卡 D 状态握 NAND 锁，只能断电 → 改用 `flash_erase`，且**擦写期间禁止并发访问 NAND**（并发是触发条件）
+- `mtd erase` **自身**在 `part_fill_badblockstats` 触发内核 Oops，卡 D 状态、kill -9 无效、只能断电 → **一开始就用 `flash_erase`**（非并发所致；当时并存的 nanddump 是锁被占后的连带受害者）
 - **u-boot 请求的 .itb 文件名不带 `meraki_mr42-`**，与 clayface 仓库文件名不符 → 必须建别名，否则 TFTP 404、白灯不亮且无从定位
 - **reset 按太久进 failsafe → 无 ubusd → sysupgrade 静默失败**（只打印 "Commencing upgrade" 后无任何动作，连续三次误判为"正在刷"）→ 起 `ubusd` 或绕过 procd 直接 `do_stage2`
 - 诊断模式 `cal` == 正常模式 `art`（md5 实测一致）；u-boot 诊断 `mtd1` vs initramfs `mtd8`

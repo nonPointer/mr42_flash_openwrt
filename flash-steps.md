@@ -40,7 +40,7 @@ echo 0 > /sys/devices/platform/msm_nand/boot_layout
 ```
 
 🔴 **从这一刻起进入危险窗口**：普通重启 = 砖。只能走下一步的 reset 网络引导，一路做到 sysupgrade 完成。
-🔴 **单会话操作**：擦写期间不要另开 telnet 碰 NAND（并发会触发内核 Oops）。
+🔴 **一开始就用 `flash_erase`,别用 `mtd erase`**：`mtd erase /dev/mtd1` **自身**就会死锁在坏块统计（内核 `part_fill_badblockstats` 空指针 Oops），`Ctrl+C`/`kill -9` 都无效、只能断电 —— 不是并发导致的。
 🔴 设备自带的 `/etc/update_uboot.sh` **不要用**：它无错误检查、且用会崩的 `mtd erase`。
 
 （可选回读验证：`dd if=/dev/mtd1 bs=64k count=8 | strings | grep serverip` 应看到 `serverip=192.168.1.250`。）

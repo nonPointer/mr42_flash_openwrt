@@ -299,9 +299,11 @@ Backtrace:
 之后 `mtd erase` 进程卡死在 **D 状态**（不可中断睡眠，`kill -9` 无效），**握着 NAND 锁不放**，
 任何后续 NAND 读写全部挂住。用户态无法解锁，**只能断电**。
 
-- 用 `flash_erase /dev/mtd1 0 0` 代替，走不同 ioctl 路径，实测正常
-- **触发条件是并发访问**：不要在擦写进行中另开一个 telnet 去 `nanddump` 看进度。
-  所有 NAND 操作必须在**单个会话**里顺序完成
+- **`mtd erase /dev/mtd1` 自身即触发，不需要任何并发** —— 单独敲这一条就会死锁在坏块统计
+  （`part_fill_badblockstats`）。`kill -9`/`Ctrl+C` 都无效（D 状态收不到信号），只能断电。
+- **一开始就用 `flash_erase /dev/mtd1 0 0`** —— 它走标准 `MEMERASE` ioctl，不碰那个崩掉的函数，实测正常。
+- 更正一个早期误判：当时 ps 里同时卡住的 `nanddump /dev/mtd1` 是 NAND 锁被占后的**连带受害者**，
+  不是原因；不是"并发导致"的。（单会话操作仍是好习惯，但和这个 bug 无关。）
 
 **坑 2：新 u-boot 请求的 initramfs 文件名和仓库里的不一样**
 
@@ -366,7 +368,7 @@ ln -f toolchain/openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb \
 | `mtd erase` 报错 | 没 insmod mtd-rw；或内核太老（clayface 5.10 镜像没问题） |
 | 刷完 mtd8 重启变砖 | 没 sysupgrade 就重启了——只能 NAND 编程器救（见下） |
 | **sysupgrade 打印 "Commencing upgrade" 后什么都没发生** | **进了 failsafe，没有 ubusd**。sysupgrade 最后一步是 `ubus call system sysupgrade` 交给 procd，连不上 ubus 就静默失败（设备不重启、版本不变，极易误判为"正在刷"）。修：`ubusd &` 后重试；仍不行则绕过 procd 直接 `export IMAGE=/tmp/xxx.bin INTERACTIVE=0 VERBOSE=1; sh /lib/upgrade/do_stage2`（见 `flash-steps.md` ⑤）|
-| `mtd erase` 卡死、之后所有 NAND 操作都挂 | 内核在 `part_fill_badblockstats` Oops，进程卡 D 状态握锁不放，**用户态无法解锁，只能断电**。改用 `flash_erase`，且擦写期间**单会话**操作（见 8.3） |
+| `mtd erase` 卡死、之后所有 NAND 操作都挂 | `mtd erase` 自身即在 `part_fill_badblockstats` Oops，进程卡 D 状态握锁，`kill -9` 无效、**只能断电**。**一开始就用 `flash_erase`**（见 8.3；非并发所致） |
 | u-boot 反复 TFTP 失败 / 白灯不亮 | 多半是**文件名不匹配**：u-boot 请求的是不带 `meraki_mr42-` 的名字（见 8.3 坑 2）。回读确认：`dd if=/dev/mtd1 bs=64k count=8 \| strings \| grep fit_uimage_initramfs` |
 | initramfs 里没有 uhttpd / LuCI 打不开 | failsafe 模式不启动 uhttpd。刷机用命令行即可（见 `flash-steps.md` ⑤），或重新引导时**早点松开 reset** |
 | `setsid: not found` / `nohup` 不存在 | busybox 精简版没有。用 `sh -c 'trap "" HUP; ...'` 防 SIGHUP |

@@ -47,7 +47,7 @@ OpenWrt 官方镜像默认的 `ath10k-ct` 驱动**把 5GHz 发射锁死在 40MHz
 
 ## 🔴 实测踩过的坑（都写进了文档）
 
-1. **`mtd erase` 会冻死 NAND 控制器** —— Meraki 3.4 内核在 `part_fill_badblockstats` Oops，只能断电。用 `flash_erase`，且擦写期间**单会话**操作。
+1. **`mtd erase` 自身会冻死 NAND 控制器** —— `mtd erase /dev/mtd1` 单独一条即在 Meraki 3.4 内核的 `part_fill_badblockstats` Oops，进程卡 D 状态、`kill -9` 无效、只能断电。**一开始就用 `flash_erase`**（不是并发所致）。
 2. **u-boot 请求的 .itb 文件名不带 `meraki_mr42-`** —— 名字不匹配 → TFTP 404 → 白灯不亮。下载时按 `toolchain-sha256.md` 用正确文件名（或建个别名）。
 3. **reset 按太久进 failsafe** → 无 ubusd → sysupgrade 静默失败。网络引导时早点松手；已进了就手动 `ubusd &` 或 `do_stage2`（见 `flash-steps.md` ⑤）。
 4. **诊断模式与正常模式 mtd 编号不同** —— u-boot 诊断是 mtd1、initramfs 里是 mtd8；写错编号毁别的分区。
