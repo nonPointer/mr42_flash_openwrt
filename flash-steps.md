@@ -2,14 +2,14 @@
 
 > 平台无关：host 端只需要「静态 IP + TFTP 服务器 + telnet/ssh 客户端」，
 > 三者在 macOS / Linux / Windows 上都有。设备端命令在 busybox 里执行，与 host 无关。
-> 已在一台 MR42 上端到端验证。原理详见 `guide_macos_arm64.md`；踩过的坑见 `hardware_notes.md`。
+> 已在一台 MR42 上端到端验证。原理详见 `guide.md`；踩过的坑见 `hardware-notes.md`。
 
 ## 前置（host 端）
 
-1. **准备文件**：按 `TOOLCHAIN_SHA256.md` 下载并校验：
+1. **准备文件**：按 `toolchain-sha256.md` 下载并校验：
    - `mr42_u-boot.mbn`（clayface）
    - `openwrt-ipq806x-generic-initramfs-fit-uImage.itb`（clayface；⚠️ **不带 `meraki_mr42-`** 的名字，u-boot 只认这个）
-   - 最终固件：用 https://firmware-selector.openwrt.org/ 按 `packages.md` 的包列表构建（**务必换标准 ath10k**，见 `ATH10K-CT-ISSUE.md`）
+   - 最终固件：用 https://firmware-selector.openwrt.org/ 按 `packages.md` 的包列表构建（**务必换标准 ath10k**，见 `ath10k-ct-issue.md`）
 2. **静态 IP**：把接 AP 的网口设为 `192.168.1.250 / 255.255.255.0`（新 u-boot 的 serverip 硬编码为此）。
 3. **TFTP 服务器**：在放着上述文件的目录启动。macOS 内置 tftpd 社区实测不可用，用本仓库 `tftpd3.py`：
    ```

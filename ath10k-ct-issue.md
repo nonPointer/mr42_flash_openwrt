@@ -88,7 +88,7 @@ MR42 的 `device_packages` 里**写死了** `ath10k-firmware-qca9887-ct` 和
 > 万一真的误删了：squashfs 机型上 `apk del` 只是盖了 overlay whiteout，
 > 原文件还在 `/rom` 下。删掉 whiteout 即可原地复活：
 > `find /overlay/upper -type c -exec rm -f {} \;`
-> 详见 `hardware_notes.md` 的 whiteout 章节。
+> 详见 `hardware-notes.md` 的 whiteout 章节。
 
 ### 在网页上构建（推荐）
 
@@ -161,5 +161,5 @@ ath10k 的很多统计**不是驱动算的，是固件上报的**。CT 固件靠
 
 - [OpenWrt issue #8262 — ath10k-ct will not TX above 40MHz width](https://github.com/openwrt/openwrt/issues/8262)
 - [greearb/ath10k-ct](https://github.com/greearb/ath10k-ct)（CT 驱动与固件上游）
-- 本目录 `hardware_notes.md` — 完整硬件实测笔记（射频能力、功率、overlay whiteout 等）
+- 本目录 `hardware-notes.md` — 完整硬件实测笔记（射频能力、功率、overlay whiteout 等）
 - 本目录 `packages.md` — 完整包清单
