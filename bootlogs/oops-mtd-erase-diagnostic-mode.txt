@@ -1,0 +1,46 @@
+# 完整 dmesg：`mtd erase /dev/mtd1` 在 Meraki 诊断模式（Linux 3.4.103）触发的内核 Oops
+#
+# 场景：免拆机刷 u-boot 时，在诊断模式 telnet 里执行
+#   echo 1 > /sys/devices/platform/msm_nand/boot_layout
+#   mtd erase /dev/mtd1                 # ← 就是这一条，单独执行即死锁
+# 结果：进程卡死在 D 状态（不可中断睡眠），Ctrl+C / kill -9 均无效，NAND 控制器冻住，只能断电。
+#
+# 关键：Oops 在 part_fill_badblockstats（分区坏块统计），调用链一路回溯到用户态的 ioctl()
+#       —— 即 OpenWrt `mtd` 工具在擦除路径里发的一个 ioctl（寄存器里 r5=0x80104d12，'M' 组 MTD ioctl）
+#       触发了空指针。`flash_erase`（mtd-utils）走标准 MEMERASE ioctl，不碰此函数，实测正常。
+#
+# 采集方式：另起 telnet 跑 `dmesg | tail -30`。故只有栈转储尾部 + Backtrace，
+#          Oops 头部（"Unable to handle kernel NULL pointer dereference"、PC/LR、r0–r15、
+#          出错进程名）因 tail 截断未捕获。
+# 内核：Linux 3.4.103 (u9611896@WNC-17828) #22 SMP  (Meraki QSDK 诊断固件)
+
+[  701.808747] de20: c271a8f0 00000029 cc6aa03c cc6aa040 cc58de5c cc58de40 c01ccc68 c03935a8
+[  701.816900] de40: 00000000 cc58dfb0 00000000 00812254 cc58de6c cc58de60 c007c9e0 c01ccbc8
+[  701.825085] de60: cc58defc cc58de70 c001a3f4 c007c9dc c001a3f4 c007c9dc 00000001 00000810
+[  701.833239] de80: 00000000 cc6aa03c 00000000 00813000 00000000 ca3b0618 40000000 c34b4de0
+[  701.841393] dea0: 40000000 ccaf1080 cc58dee4 c271a8f0 c271a840 c271a840 c2e8d970 ca493b40
+[  701.849547] dec0: 80104d12 be8ae5a0 c000eb84 cc58c000 cc58defc cc58dee0 c026a9bc c0269c84
+[  701.857700] dee0: cf75af98 80104d12 ca493b40 be8ae5a0 cc58df7c cc58df00 c00f3540 c026a994
+[  701.865885] df00: c271a8f0 00000001 00100073 00813000 cc58df7c cc58df20 c00d1f58 c00ae8fc
+[  701.874039] df20: cc6aa03c 00812000 cc58df6c cc58df38 c01ccd70 c03935a8 c00e42e0 60000013
+[  701.882193] df40: cc6aa000 00813000 00812000 00813000 00813000 cc6aa03c 00000003 80104d12
+[  701.890346] df60: be8ae5a0 ca493b40 c000eb84 cc58c000 cc58dfa4 cc58df80 c00f3aa8 c00f34c4
+[  701.898500] df80: 00813000 00000000 be8ae5a0 80104d12 00000003 00000036 00000000 cc58dfa8
+[  701.906685] dfa0: c000ea00 c00f3a74 be8ae5a0 80104d12 00000003 80104d12 be8ae5a0 00000000
+[  701.914839] dfc0: be8ae5a0 80104d12 00000003 00000036 00000003 00810240 00000001 00810250
+[  701.922992] dfe0: 400e0584 be8ae3e0 000093ac 400e05c4 60000010 00000003 00000000 00000000
+[  701.931146] Backtrace:
+[  701.933583] [<c0269204>] (part_fill_badblockstats+0x0/0x7c) from [<c026a1c8>] (mtdchar_ioctl+0x550/0xd10)
+[  701.943142]  r7:ca493b40 r6:ccad4000 r5:80104d12 r4:be8ae5a0
+[  701.948766] [<c0269c78>] (mtdchar_ioctl+0x0/0xd10) from [<c026a9bc>] (mtdchar_unlocked_ioctl+0x34/0x4c)
+[  701.958138]  r9:cc58c000 r8:c000eb84 r7:be8ae5a0 r6:80104d12 r5:ca493b40
+[  701.964667] r4:c2e8d970
+[  701.967260] [<c026a988>] (mtdchar_unlocked_ioctl+0x0/0x4c) from [<c00f3540>] (do_vfs_ioctl+0x88/0x5b0)
+[  701.976538]  r7:be8ae5a0 r6:ca493b40 r5:80104d12 r4:cf75af98
+[  701.982193] [<c00f34b8>] (do_vfs_ioctl+0x0/0x5b0) from [<c00f3aa8>] (sys_ioctl+0x40/0x64)
+[  701.990346]  r9:cc58c000 r8:c000eb84 r7:ca493b40 r6:be8ae5a0 r5:80104d12
+[  701.996844] r4:00000003
+[  701.999468] [<c00f3a68>] (sys_ioctl+0x0/0x64) from [<c000ea00>] (ret_fast_syscall+0x0/0x30)
+[  702.007810]  r7:00000036 r6:00000003 r5:80104d12 r4:be8ae5a0
+[  702.013433] Code: e92dd8f0 e24cb004 e5903260 e1a04000 (e593309c)
+[  702.025429] ---[ end trace 9d2db1b0e5962fa5 ]---

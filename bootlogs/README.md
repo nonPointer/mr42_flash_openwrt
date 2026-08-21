@@ -9,3 +9,5 @@
 
 > 诊断模式的内核 banner 是 `Qualcomm Atheros AP160 reference board` —— 这是高通参考板名，
 > Meraki 直接拿来当诊断系统，几乎未裁剪。产品系统的分析见 `../nand-forensics.md`。
+
+此外 `oops-mtd-erase-diagnostic-mode.txt` 是 `mtd erase /dev/mtd1` 在诊断模式触发的完整内核 Oops（栈转储 + backtrace）—— 说明为何刷 u-boot 一开始就要用 `flash_erase`。

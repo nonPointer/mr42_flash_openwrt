@@ -293,8 +293,17 @@ Meraki 的 3.4 内核在 `part_fill_badblockstats` 有空指针 bug。实测表�
 ```
 Backtrace:
 [<c0269204>] (part_fill_badblockstats+0x0/0x7c) from [<c026a1c8>] (mtdchar_ioctl+0x550/0xd10)
+[<c0269c78>] (mtdchar_ioctl+0x0/0xd10) from [<c026a9bc>] (mtdchar_unlocked_ioctl+0x34/0x4c)
+[<c026a988>] (mtdchar_unlocked_ioctl+0x0/0x4c) from [<c00f3540>] (do_vfs_ioctl+0x88/0x5b0)
+[<c00f34b8>] (do_vfs_ioctl+0x0/0x5b0) from [<c00f3aa8>] (sys_ioctl+0x40/0x64)
+[<c00f3a68>] (sys_ioctl+0x0/0x64) from [<c000ea00>] (ret_fast_syscall+0x0/0x30)
+Code: e92dd8f0 e24cb004 e5903260 e1a04000 (e593309c)
 ---[ end trace 9d2db1b0e5962fa5 ]---
 ```
+
+调用链一路回溯到用户态的 `sys_ioctl` —— 即 `mtd` 工具在擦除路径里发的一个 ioctl
+（寄存器 `r5=0x80104d12`，'M' 组 MTD ioctl）进到 `part_fill_badblockstats` 触发空指针。
+完整 dmesg（栈转储 + backtrace）见 `bootlogs/oops-mtd-erase-diagnostic-mode.txt`。
 
 之后 `mtd erase` 进程卡死在 **D 状态**（不可中断睡眠，`kill -9` 无效），**握着 NAND 锁不放**，
 任何后续 NAND 读写全部挂住。用户态无法解锁，**只能断电**。
