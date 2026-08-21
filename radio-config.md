@@ -25,6 +25,7 @@ uci set network.mgmt.netmask="$MGMT_MASK"
 # 注意：mgmt 不配 gateway，默认路由只由 lan(dhcp) 那条给
 
 uci set dhcp.lan.ignore='1'                       # 关掉发地址，别和主路由抢
+uci set prometheus-node-exporter-lua.main.listen_interface='lan'   # exporter 默认绑 loopback，改 lan 才可被抓
 uci commit
 exit 0
 ```

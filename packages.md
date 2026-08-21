@@ -19,7 +19,7 @@
 | 🔴 驱动 | `-kmod-ath10k-ct kmod-ath10k` + 两个 firmware 同样换成非 -ct | **必换**：ath10k-ct 把 5G 锁 40MHz（详见 `ath10k-ct-issue.md`）。必须构建时换，事后 apk 会被 sysupgrade 覆盖回去 |
 | 无线 | `-wpad-basic-mbedtls wpad-mbedtls`、`dawn`、`luci-app-dawn` | full 版 wpad 才有 802.11v；没有它 dawn 只能"踢"不能"劝"。dawn=漫游决策 |
 | 哑 AP | `-dnsmasq -firewall4 -luci-app-firewall -ppp -ppp-mod-pppoe -luci-proto-ppp`、`odhcpd-ipv6only` | 关掉会和主路由抢的服务；`odhcpd-ipv6only` 只做 IPv6 中继（官方默认已带） |
-| 监控 | `luci-app-statistics` + `collectd-mod-{cpu,thermal,interface,wireless}`、`nlbwmon`+`luci-app-nlbwmon`、`prometheus-node-exporter-lua` | `collectd-mod-thermal` 尤重要（吸顶封闭机壳过热降频）；prometheus exporter 供多台接中央 Grafana |
+| 监控 | `luci-app-statistics` + `collectd-mod-{cpu,thermal,interface,wireless}`、`nlbwmon`+`luci-app-nlbwmon`、`prometheus-node-exporter-lua` | `collectd-mod-thermal` 尤重要（吸顶封闭机壳过热降频）；prometheus exporter 供多台接中央 Grafana。**exporter 默认只绑 loopback**，要中央 Prometheus 抓取须 `uci set prometheus-node-exporter-lua.main.listen_interface='lan'`（首启已配） |
 | 诊断/稳定 | `iperf3`（测吞吐唯一可靠办法）、`ethtool`、`htop`、`tcpdump`、`luci-app-watchcat`（挂了自动重启） | |
 
 ## 不装 mesh
