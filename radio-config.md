@@ -119,6 +119,24 @@ uci commit network
   只 `reload` 不会把新接口拉起来（实测：加 mgmt 别名后 reload，192.168.1.1 不通；重启后才生效）。
   烤进固件首启（=干净启动）则无此问题
 - `wifi up` 会清掉临时测试时设的 `disabled` 标志，测完记得检查补回
+### 漫游 / 频段引导：谁负责什么（重要，常被混淆）
+
+| 机制 | 作用 | 生效条件 |
+|---|---|---|
+| **dawn** | **做决定** —— 该不该切、切到哪（5G/2.4G/别的 AP） | 随固件预装并自启 |
+| **802.11k** | 给客户端邻居列表 | full wpad |
+| **802.11v** | AP 发 "建议你搬去 X"（BSS Transition） | full wpad |
+| **802.11r** | 切换时快速重认证 | full wpad **+ WPA2/WPA3-PSK** |
+
+- **5G↔2.4G 自动切换 = band steering = dawn + 11v**，**不是 11r**。
+  前提：两频段**同一个 SSID**（本固件默认都叫 `OpenWrt`）。
+  dawn 默认给 5G 更高初始分（`dawn.802_11a.initial_score=100` > `802_11g=80`），
+  信号够就把客户端往 5G 引导；`dawn.global.kicking>0` 时会主动引导、必要时短暂踢下线逼其重连。
+- **AP 间漫游 = dawn + 11k/v/r**。
+- **11r 默认在配置里开着，但开放 SSID 下惰性**；设了 PSK 才激活，且它只加速切换、不做决定。
+- ⚠️ **客户端才是最终决定者**：dawn/11v 只能建议。不支持 11v 的老设备（粘性客户端）
+  只能靠 `kicking` 踢下线来逼其重选，体验不如原生配合顺滑。
+
 - 802.11k/v/r 都需要 **full 版 `wpad-mbedtls`**（basic 版无 11v/完整 11k）。
   **11r 只有在设了 WPA2/WPA3-PSK（`encryption`+`key`）后才真正生效**；`encryption=none` 时这些项惰性存在、无害。
   全 fleet 的 `mobility_domain`、SSID、加密、密钥必须一致，FT 才能在 AP 间漫游

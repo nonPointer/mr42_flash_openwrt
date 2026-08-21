@@ -79,7 +79,10 @@ CT 版：`10.4b-ct-9980-fW-14`；标准版：`10.2.4-1.0-00047` / `10.4.1.00030-
 - 25.12.5 包管理器是 **apk**，不是 opkg
 - 出厂默认开着 DHCP 服务器，当 AP 用必须关（`radio-config.md`）
 - reset 按钮：**上电时按住** = u-boot TFTP 网络引导（不是重置！）；**运行中**短按=重启、按住≥5s=恢复出厂
-- 设备**无 RTC 电池**，断电丢时间，靠 NTP（`sysfixtime` 用文件 mtime 兜底，故不会是 1970）
+- 设备**无 RTC 电池**，断电丢时间，靠 NTP（`sysfixtime` 用文件 mtime 兜底，故不会是 1970）。
+  联网后 ntpd 自动同步；**busybox ntpd 对小幅校准静默、不写日志**，`logread` 空 ≠ 没同步。
+  查状态：`ntpd -n -q -d -p 0.openwrt.pool.ntp.org`，offset 接近 0 即已同步。
+  没网关/DNS 时才真的同步不了（如直连一台非 DHCP 主机）
 - LED：`orange`/`white` 走 GPIO，`red`/`green`/`blue` 走 I2C 的 TLC59108（RGB 混色）；另有 INA219(功耗)、24c64(板级数据) 两颗 I2C 芯片
 
 ## 参考
