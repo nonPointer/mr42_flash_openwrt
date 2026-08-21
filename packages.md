@@ -49,3 +49,5 @@ curl -s -X POST https://sysupgrade.openwrt.org/api/v1/build \
 
 > 同样的包列表 → 相同 request_hash → 可复现同一份固件（批量多台方便）。
 > 查包名注意文件名含 `~`（如 `...68036~04ab59d.apk`），正则漏掉 `~` 会误判"不存在"。
+
+> **OTA 更新检查**：`owut` + `luci-app-attendedsysupgrade` 提供；`attendedsysupgrade.client.login_check_for_upgrades` 出厂即 `1`（登录 LuCI 自动检查更新），首启脚本已显式固化。

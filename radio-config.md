@@ -26,6 +26,7 @@ uci set network.mgmt.netmask="$MGMT_MASK"
 
 uci set dhcp.lan.ignore='1'                       # 关掉发地址，别和主路由抢
 uci set prometheus-node-exporter-lua.main.listen_interface='lan'   # exporter 默认绑 loopback，改 lan 才可被抓
+uci set attendedsysupgrade.client.login_check_for_upgrades='1'      # 登录 LuCI 时检查固件更新（本就是默认，显式固化）
 uci commit
 exit 0
 ```
