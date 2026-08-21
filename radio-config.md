@@ -3,6 +3,39 @@
 刷完 OpenWrt 后在设备上执行（SSH 或串口进去，busybox ash，平台无关）。
 这些是纯 UCI 命令，可整段粘贴，也可逐条理解后执行。
 
+## 哑 AP 首启默认（贴进 firmware-selector 的 first-boot 框）
+
+单网口设备物理上当不了路由器，**唯一合理角色就是哑 AP** —— 所以别用 OpenWrt 的
+路由器默认（静态 192.168.1.1 + 开 DHCP server）。把下面这段贴进 firmware-selector 的
+"Script to run on first boot (uci-defaults)" 框，刷完开机即是哑 AP：
+
+```sh
+#!/bin/sh
+# 哑 AP 默认：lan=DHCP 客户端 + 固定 mgmt 恢复 IP + 关 DHCP 服务
+MGMT_IP='192.168.1.1'                             # ← 改这里即可换 mgmt 恢复地址
+MGMT_MASK='255.255.255.0'
+
+uci set network.lan.proto='dhcp'                 # 从主网络自动拿地址（上网/NTP/OTA）
+
+uci set network.mgmt='interface'                 # 同一 L2 的静态别名 = 带外管理入口
+uci set network.mgmt.device='@lan'
+uci set network.mgmt.proto='static'
+uci set network.mgmt.ipaddr="$MGMT_IP"           # 固定，永远可达（主路由挂了也在）
+uci set network.mgmt.netmask="$MGMT_MASK"
+# 注意：mgmt 不配 gateway，默认路由只由 lan(dhcp) 那条给
+
+uci set dhcp.lan.ignore='1'                       # 关掉发地址，别和主路由抢
+uci commit
+exit 0
+```
+
+- **日常**：走 lan 拿到的 DHCP 地址（在主路由客户端列表里找，或看它的主机名）
+- **救援**：笔记本设 `192.168.1.250`，直连 AP，`ssh root@192.168.1.1` —— 和刷机同一套，主网络怎样都能进
+- **多台可共用同一个 mgmt IP**：只要主 LAN 不是 `192.168.1.0/24`，这个地址平时不承载任何流量、
+  只在直连救援时用（那时一次只插一台），所以多台共用 `192.168.1.1` 无所谓；日常各台走各自 DHCP 地址
+- **国家码/信道/SSID 不放进首启脚本**：国家码依所在地、有法律约束，按下面的手动命令逐台设
+
+
 ## ⚠️ 一个必须知道的坑：radioN 编号不固定对应频段
 
 刷新固件会重新枚举 PCIe，`radio0`/`radio1` 与 2.4G/5G 的对应关系**可能整个对调**。

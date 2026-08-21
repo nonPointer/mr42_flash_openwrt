@@ -28,6 +28,12 @@
 无线回程必牺牲一半吞吐。且 `wpad-mesh-mbedtls` 与 `wpad-mbedtls` 互斥——走 mesh 就拿不到 full 的 11k/v。
 真要 mesh（拉不了线）：加 `kmod-batman-adv batctl-default mesh11sd`，并把 `wpad-mbedtls` 换成 `wpad-mesh-mbedtls`。
 
+## 首启默认配置
+
+单网口 = 只能当哑 AP。构建时把 `radio-config.md` 里的「哑 AP 首启默认」代码块贴进
+firmware-selector 的 **"Script to run on first boot (uci-defaults)"** 框，
+刷完开机即 DHCP 客户端 + 固定 mgmt IP（192.168.1.1）+ 关 DHCP 服务，无需手动改。
+
 ## 命令行构建（可选，跨平台）
 
 ```sh
