@@ -1,0 +1,30 @@
+===== 5 GHz TX limited to 40 MHz with the default ath10k-ct driver =====
+
+OpenWrt images for this device ship the **ath10k-ct** driver and firmware by default. On the MR42 (QCA9990) this caps **5 GHz transmit (AP → client) at 40 MHz**, even though the client and the rest of the link are VHT80-capable. The receive direction (client → AP) is unaffected and negotiates 80 MHz normally.
+
+Symptom — ''iw dev <5g-ap-iface> station dump'':
+
+<code>
+tx bitrate: 400.0 MBit/s VHT-MCS 9 40MHz short GI VHT-NSS 2   # AP -> client, stuck at 40 MHz
+rx bitrate: 866.7 MBit/s VHT-MCS 9 80MHz short GI VHT-NSS 2   # client -> AP, 80 MHz
+</code>
+
+The modulation is already the highest (MCS 9), so this is a fixed transmit-width limitation in the driver, not rate control backing off due to weak signal or a busy channel.
+
+Measured impact (iperf3, 2x2 VHT80 client, strong signal, clean channel): downstream ~300 Mbit/s vs ~700 Mbit/s upstream. Switching drivers raises downstream to ~500 Mbit/s.
+
+This matches [[https://github.com/openwrt/openwrt/issues/8262|openwrt#8262]] (TP-Link EAP245v3 / QCA9982), where a spectrum analyzer confirmed ath10k-ct really transmits at 40 MHz — a real throughput limitation, not just a reporting quirk.
+
+==== Workaround: use the mainline ath10k driver ====
+
+Build a custom image that replaces the CT driver and firmware with the mainline ones. In the [[https://firmware-selector.openwrt.org/|Firmware Selector]] (or ImageBuilder), add to the package list:
+
+<code>
+-kmod-ath10k-ct kmod-ath10k
+-ath10k-firmware-qca9887-ct ath10k-firmware-qca9887
+-ath10k-firmware-qca99x0-ct ath10k-firmware-qca99x0
+</code>
+
+This must be done at **image build time**. The device profile pins the ''-ct'' firmware, so swapping the packages at runtime (''apk''/''opkg'') is reverted on the next sysupgrade.
+
+After switching, 5 GHz transmits at 80 MHz and downstream throughput rises to ~500 Mbit/s. Trade-off: the mainline ath10k driver does not report ''tx bitrate'' in ''iw'' (it may show nothing, or 6 MBit/s) — a cosmetic reporting gap only; ''signal'', ''rx bitrate'', retry/fail counters and the inputs used by dawn/802.11k are all still reported. Judge the result with iperf3, not the ''iw'' tx-rate line.

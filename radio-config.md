@@ -18,7 +18,7 @@ MGMT_MASK='255.255.255.0'
 uci set network.lan.proto='dhcp'                 # 从主网络自动拿地址（上网/NTP/OTA）
 
 uci set network.mgmt='interface'                 # 同一 L2 的静态别名 = 带外管理入口
-uci set network.mgmt.device='@lan'
+uci set network.mgmt.device='br-lan'   # 直接绑桥设备，不用 @lan 别名（见下）
 uci set network.mgmt.proto='static'
 uci set network.mgmt.ipaddr="$MGMT_IP"           # 固定，永远可达（主路由挂了也在）
 uci set network.mgmt.netmask="$MGMT_MASK"
@@ -117,6 +117,9 @@ uci commit network
 
 - 国家码只在 hostapd 真正启动后才写进 regdomain；接口全 disabled 时 `iw reg get` 一直显示默认 `US`，不是没生效
 - `wifi reload` 不会启动已 `wifi down` 的接口（`autostart=false`），必须用 `wifi up`
+- 🔴 **mgmt 恢复 IP 必须绑 `br-lan`，不能用 `@lan` 别名**：alias 依赖 parent 接口 up，而 `proto=dhcp`
+  的 lan 在**拿到租约前不算 up**；en7 直连（无 DHCP server）时 lan 永远不 up → `@lan` 别名不生效 →
+  连不上 —— 恰恰在最需要救援 IP 时失效。绑 `br-lan` 随链路 up 即生效，与 DHCP 无关。
 - **活体应用网络结构性变更（新增 alias 接口、改 proto）必须 `/etc/init.d/network restart` 或重启**；
   只 `reload` 不会把新接口拉起来（实测：加 mgmt 别名后 reload，192.168.1.1 不通；重启后才生效）。
   烤进固件首启（=干净启动）则无此问题
