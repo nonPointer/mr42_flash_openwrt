@@ -450,15 +450,3 @@ boardData_AR900B_CUS239_negative_pwr_offset_5G_v2_007.bin
 7. **功率天花板来源**：ART 分区（3×AR9300 EEPROM）+ AR900B 各国校准模板
 
 所有提取物在 `scratchpad/nand/`（cryptidfs = 产品系统，diagfs = 诊断系统）。
-
-## 待挖
-
-- [x] ~~解 XZ 内核映像，找 MR42 的原厂代号~~ → **Yowie**（发现 1）
-- [x] ~~提取 Meraki rootfs~~ → 诊断系统 rootfs 已完整提取（发现 7）
-- [x] ~~ART 分区校准数据结构~~ → 三块 AR9300 EEPROM（发现 8）
-- [x] ~~24c64 EEPROM 结构~~ → serial/board/hwRev/4×MAC（发现 10，从工具符号还原）
-- [x] ~~实读 24c64 字节~~ → board_name=meraki_Yowie + 序列号 + 2×MAC（发现 12）
-- [x] ~~`part.safe`/`part.old` FIT~~ → Meraki 产品固件 + RSA 签名锁（发现 9）
-- [x] ~~`storage` 卷~~ → 内核日志区（含设备 MAC），无云端凭据
-
-

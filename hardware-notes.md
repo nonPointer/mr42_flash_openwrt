@@ -81,3 +81,10 @@ CT 版：`10.4b-ct-9980-fW-14`；标准版：`10.2.4-1.0-00047` / `10.4.1.00030-
 - reset 按钮：**上电时按住** = u-boot TFTP 网络引导（不是重置！）；**运行中**短按=重启、按住≥5s=恢复出厂
 - 设备**无 RTC 电池**，断电丢时间，靠 NTP（`sysfixtime` 用文件 mtime 兜底，故不会是 1970）
 - LED：`orange`/`white` 走 GPIO，`red`/`green`/`blue` 走 I2C 的 TLC59108（RGB 混色）；另有 INA219(功耗)、24c64(板级数据) 两颗 I2C 芯片
+
+## 参考
+
+- [ath10k-ct 5GHz 40MHz 限制 — openwrt/openwrt#8262](https://github.com/openwrt/openwrt/issues/8262)
+- [greearb/ath10k-ct](https://github.com/greearb/ath10k-ct) — CT 驱动/固件上游
+- [wireless-regdb](https://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git/tree/db.txt) — 各国监管功率/信道
+- [OpenWrt overlayfs / 只读 rootfs](https://openwrt.org/docs/techref/filesystems)

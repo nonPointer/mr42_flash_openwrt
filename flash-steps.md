@@ -92,3 +92,9 @@ sh /lib/upgrade/do_stage2
 - 期间只用 reset 网络引导，不普通重启
 - u-boot 写进 flash 后永久有效、断电不丢
 - **只要 u-boot 完好，按住 reset 上电总能救回来**，别急着拆机
+
+## 参考
+
+- [OpenWrt wiki: Cisco Meraki MR42](https://openwrt.org/toh/meraki/mr42)
+- [clayface/openwrt-cryptid](https://github.com/clayface/openwrt-cryptid) — u-boot + 引导 initramfs 来源
+- [OpenWrt: sysupgrade / failsafe](https://openwrt.org/docs/guide-user/installation/generic.sysupgrade)

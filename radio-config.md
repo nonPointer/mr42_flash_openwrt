@@ -75,6 +75,10 @@ for i in $(uci show wireless | sed -n 's/^wireless\.\([a-z_0-9]*\)\.mode=.ap.$/\
     uci set wireless.$i.rrm_beacon_report='1'
     uci set wireless.$i.bss_transition='1'      # 802.11v
     uci set wireless.$i.wnm_sleep_mode='1'
+    uci set wireless.$i.ieee80211r='1'          # 802.11r 快速漫游
+    uci set wireless.$i.mobility_domain='4d52'  # 全 fleet 相同的一个 4-hex
+    uci set wireless.$i.ft_over_ds='1'
+    uci set wireless.$i.ft_psk_generate_local='1'   # PSK 本地生成，免配 r0kh/r1kh
     # SSID / 加密按需：
     # uci set wireless.$i.ssid='MyWiFi'
     # uci set wireless.$i.encryption='sae-mixed'
@@ -111,5 +115,17 @@ uci commit network
 
 - 国家码只在 hostapd 真正启动后才写进 regdomain；接口全 disabled 时 `iw reg get` 一直显示默认 `US`，不是没生效
 - `wifi reload` 不会启动已 `wifi down` 的接口（`autostart=false`），必须用 `wifi up`
+- **活体应用网络结构性变更（新增 alias 接口、改 proto）必须 `/etc/init.d/network restart` 或重启**；
+  只 `reload` 不会把新接口拉起来（实测：加 mgmt 别名后 reload，192.168.1.1 不通；重启后才生效）。
+  烤进固件首启（=干净启动）则无此问题
 - `wifi up` 会清掉临时测试时设的 `disabled` 标志，测完记得检查补回
-- 802.11v（`bss_transition`/`wnm_sleep_mode`）需要 **full 版 `wpad-mbedtls`**；官方默认的 basic 版没有
+- 802.11k/v/r 都需要 **full 版 `wpad-mbedtls`**（basic 版无 11v/完整 11k）。
+  **11r 只有在设了 WPA2/WPA3-PSK（`encryption`+`key`）后才真正生效**；`encryption=none` 时这些项惰性存在、无害。
+  全 fleet 的 `mobility_domain`、SSID、加密、密钥必须一致，FT 才能在 AP 间漫游
+
+## 参考
+
+- [OpenWrt: dumb AP / 网桥式 AP](https://openwrt.org/docs/guide-user/network/wifi/dumbap)
+- [OpenWrt: 802.11r/k/v 快速漫游](https://openwrt.org/docs/guide-user/network/wifi/80211r)
+- [OpenWrt: 别名接口（aliases）](https://openwrt.org/docs/guide-user/network/network_configuration)
+- [openwrt/dawn](https://github.com/openwrt/dawn) — 客户端引导守护
