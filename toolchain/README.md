@@ -69,14 +69,21 @@ ln -f openwrt-ipq806x-generic-meraki_mr52-initramfs-fit-uImage.itb \
 
 ## 关于 `mr42-custom-latest.bin`
 
-指向 ASU 构建的定制固件的**软链接**，免得记文件名里那串包列表哈希：
+指向 ASU 构建的定制固件的**软链接**，免得记那串哈希：
 
 ```
-mr42-custom-latest.bin → openwrt-25.12.5-b08d78ad265b-...-squashfs-sysupgrade.bin
+mr42-custom-latest.bin → openwrt-25.12.5-mr42-dumbap-kvr-c8ad0586.bin
 ```
 
-`b08d78ad265b` 是**包列表的哈希** —— 改任何一个包，重新构建出来的 hash 就不同。
-这是区分不同定制版本的唯一依据（文件名里的 `25.12.5` 各版本都一样，容易看错）。
+涉及**两个不同的哈希**，别混：
+
+- ASU 生成的原始文件名里有段 `b08d78ad265b` —— **包列表哈希**，只随包集合变化。
+  改包才变；只改 first-boot 配置（uci-defaults）它不变，于是不同配置版会撞同名。
+- 所以本仓库把文件重命名为 `...dumbap-kvr-<请求哈希>.bin`，后缀 `c8ad0586` 是
+  **ASU 请求哈希**（随包*或* defaults 任一变化而变），用来区分不同配置修订。
+
+当前 `c8ad0586` 版 sha256：`312f98395db7fdd2eca9ba9afc619d7dba0d295062e18a391eb9d33c4766389b`
+（哑 AP + k/v/r + 标准 ath10k + 关防火墙 + 唯一 hostname + dawn 广播 + 默认启用 wifi）。
 
 > 🔴 **官方原版已挪进 `_unused/`** ——
 > 它带 `ath10k-ct` 驱动，5G 下行会腰斩到 300 Mbps，而且文件名和定制版极其相似，

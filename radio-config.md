@@ -15,6 +15,10 @@
 MGMT_IP='192.168.1.1'                             # ← 改这里即可换 mgmt 恢复地址
 MGMT_MASK='255.255.255.0'
 
+# 唯一 hostname —— 多 AP 部署时 mDNS/dawn/日志/DHCP 靠它区分；从 eth0 MAC 自动派生，一份镜像刷所有设备
+_mac=$(cat /sys/class/net/eth0/address 2>/dev/null | tr -d ':')
+[ -n "$_mac" ] && uci set system.@system[0].hostname="mr42-$(echo -n "$_mac" | tail -c 6)"
+
 uci set network.lan.proto='dhcp'                 # 从主网络自动拿地址（上网/NTP/OTA）
 
 uci set network.mgmt='interface'                 # 同一 L2 的静态别名 = 带外管理入口
@@ -27,6 +31,15 @@ uci set network.mgmt.netmask="$MGMT_MASK"
 uci set dhcp.lan.ignore='1'                       # 关掉发地址，别和主路由抢
 uci set prometheus-node-exporter-lua.main.listen_interface='lan'   # exporter 默认绑 loopback，改 lan 才可被抓
 uci set attendedsysupgrade.client.login_check_for_upgrades='1'      # 登录 LuCI 时检查固件更新（本就是默认，显式固化）
+
+# 哑 AP 不需要防火墙：只做 L2 桥接，过路流量走网桥不经 fw4；fw4 只挡到达本机的流量，而本机管理在可信 LAN 上本就放行。
+# 关键：默认 input=REJECT（对 TCP 发 tcp-reset），lan 无 DHCP 租约时 br-lan 会掉出 lan zone → 本该救援的 mgmt IP 反被 REJECT。见下"必须知道的坑"。
+/etc/init.d/firewall disable 2>/dev/null; /etc/init.d/firewall stop 2>/dev/null
+
+# dawn 漫游守护改广播模式：默认 network_option=2(umdns) 在多台同名/共享 mgmt IP 时对等发现会冲突（见下 dawn 一节）。
+uci set dawn.@network[0].network_option='0'
+uci set dawn.@network[0].broadcast_ip='255.255.255.255'   # 受限广播，与子网无关
+
 uci commit
 exit 0
 ```
@@ -72,6 +85,7 @@ scan=$(uci show wireless | grep -B1 '1b900000' | sed -n 's/^wireless\.\(radio[0-
 
 # 每个已启用 radio 的接口打开 802.11k/v（需 full 版 wpad-mbedtls）
 for i in $(uci show wireless | sed -n 's/^wireless\.\([a-z_0-9]*\)\.mode=.ap.$/\1/p'); do
+    uci -q delete wireless.$i.disabled          # 启用接口（OpenWrt 默认全 disabled='1'）；生产应先设 SSID+密码
     uci set wireless.$i.ieee80211k='1'
     uci set wireless.$i.rrm_neighbor_report='1'
     uci set wireless.$i.rrm_beacon_report='1'
@@ -120,6 +134,10 @@ uci commit network
 - 🔴 **mgmt 恢复 IP 必须绑 `br-lan`，不能用 `@lan` 别名**：alias 依赖 parent 接口 up，而 `proto=dhcp`
   的 lan 在**拿到租约前不算 up**；en7 直连（无 DHCP server）时 lan 永远不 up → `@lan` 别名不生效 →
   连不上 —— 恰恰在最需要救援 IP 时失效。绑 `br-lan` 随链路 up 即生效，与 DHCP 无关。
+- 🔴 **哑 AP 要关防火墙，否则无 DHCP 租约时 mgmt 救援 IP 被 tcp-reset**：默认 `input=REJECT`（对 TCP 回 RST）。
+  lan 是 `proto=dhcp`，无租约时不 up，fw4 便不把 br-lan 归入 lan zone → br-lan 落默认 REJECT → 挂在 br-lan 上的
+  mgmt IP 连 22/80 全被 RST。正好在"网络挂了要救援"时失效。哑 AP 本不需要 fw4（只 L2 桥接、过路流量不经它），
+  直接 `/etc/init.d/firewall disable`；暴露面与"lan zone=ACCEPT"相同。
 - **活体应用网络结构性变更（新增 alias 接口、改 proto）必须 `/etc/init.d/network restart` 或重启**；
   只 `reload` 不会把新接口拉起来（实测：加 mgmt 别名后 reload，192.168.1.1 不通；重启后才生效）。
   烤进固件首启（=干净启动）则无此问题
@@ -138,6 +156,10 @@ uci commit network
   dawn 默认给 5G 更高初始分（`dawn.802_11a.initial_score=100` > `802_11g=80`），
   信号够就把客户端往 5G 引导；`dawn.global.kicking>0` 时会主动引导、必要时短暂踢下线逼其重连。
 - **AP 间漫游 = dawn + 11k/v/r**。
+- 🔴 **多 AP：dawn 默认 `network_option=2`（umdns 发现）在多台同名下失效**。mDNS 把同名 `OpenWrt.local` 当成一个实例、
+  把各台 IP（含三台共享的 mgmt `192.168.1.1`）糊在一起，dawn 认不出对等、甚至回连到自己 → 各台只看到自己的 BSS。
+  改 `network_option=0` + `broadcast_ip=255.255.255.255`（UDP 受限广播，扁平 L2 下与子网无关），
+  三台 <90s 内互相全发现（`ubus call dawn get_network` 应列出全部节点）。再配合唯一 hostname 更稳。
 - **11r 默认在配置里开着，但开放 SSID 下惰性**；设了 PSK 才激活，且它只加速切换、不做决定。
 - ⚠️ **客户端才是最终决定者**：dawn/11v 只能建议。不支持 11v 的老设备（粘性客户端）
   只能靠 `kicking` 踢下线来逼其重选，体验不如原生配合顺滑。
