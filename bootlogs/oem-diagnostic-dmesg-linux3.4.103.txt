@@ -1,0 +1,407 @@
+[    0.000000] Booting Linux on physical CPU 0
+[    0.000000] Linux version 3.4.103 (u9611896@WNC-17828) (gcc version 4.6.3 20120201 (prerelease) (Linaro GCC 4.6-2012.02) ) #22 SMP PREEMPT Mon Sep 21 12:54:05 CST 2015
+[    0.000000] CPU: ARMv7 Processor [512f04d0] revision 0 (ARMv7), cr=10c5387d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, PIPT instruction cache
+[    0.000000] Machine: Qualcomm Atheros AP160 reference board
+[    0.000000] msm_reserve_memory: Cannot reserve memory @ 0x44000000
+[    0.000000] msm_reserve_memory: 0x44600000, 0x200000
+[    0.000000] memory pool 3 (start 51100000 size 400000) initialized
+[    0.000000] Memory policy: ECC disabled, Data cache writealloc
+[    0.000000] smem_find(137, 80): wrong size 72
+[    0.000000] socinfo_init: v6, id=204, ver=2.0, raw_id=2313, raw_ver=2313, hw_plat=0,  hw_plat_ver=65536
+[    0.000000]  accessory_chip=0 hw_plat_subtype=0
+[    0.000000] On node 0 totalpages: 64000
+[    0.000000]   Normal zone: 512 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 63488 pages, LIFO batch:15
+[    0.000000] PERCPU: Embedded 8 pages/cpu @c2f63000 s10624 r8192 d13952 u32768
+[    0.000000] pcpu-alloc: s10624 r8192 d13952 u32768 alloc=8*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 63488
+[    0.000000] Kernel command line: ubi.mtd=cal root=/dev/ram rw console=ttyHSL1,115200n8 mem=0x10000000
+[    0.000000] PID hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.000000] Dentry cache hash table entries: 32768 (order: 5, 131072 bytes)
+[    0.000000] Inode-cache hash table entries: 16384 (order: 4, 65536 bytes)
+[    0.000000] Memory: 49MB 201MB = 250MB total
+[    0.000000] Memory: 204940k/211084k available, 51060k reserved, 0K highmem
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+[    0.000000]     vmalloc : 0xd0800000 - 0xff000000   ( 744 MB)
+[    0.000000]     lowmem  : 0xc0000000 - 0xd0000000   ( 256 MB)
+[    0.000000]     pkmap   : 0xbfe00000 - 0xc0000000   (   2 MB)
+[    0.000000]     modules : 0xbf000000 - 0xbfe00000   (  14 MB)
+[    0.000000]       .text : 0xc0008000 - 0xc051a000   (5192 kB)
+[    0.000000]       .init : 0xc0600000 - 0xc2e02980   (40971 kB)
+[    0.000000]       .data : 0xc2e04000 - 0xc2ea23a8   ( 633 kB)
+[    0.000000]        .bss : 0xc2ea23cc - 0xc2f612d8   ( 764 kB)
+[    0.000000] SLUB: Genslabs=11, HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] NR_IRQS:1689
+[    0.000000] sched_clock: 32 bits at 32kHz, resolution 31240ns, wraps every 134175798ms
+[    0.000000] Console: colour dummy device 80x30
+[    0.150452] Calibrating delay using timer specific routine.. 12.54 BogoMIPS (lpj=62741)
+[    0.150452] pid_max: default: 32768 minimum: 301
+[    0.150702] Mount-cache hash table entries: 512
+[    0.151515] CPU: Testing write buffer coherency: ok
+[    0.151608] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+[    0.151608] hw perfevents: enabled with ARMv7 Krait PMU driver, 5 counters available
+[    0.151671] Setting up static identity map for 0x41893c48 - 0x41893cd0
+[    0.153327] CPU1: Booted secondary processor
+[    0.153389] CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+[    0.153452] Brought up 2 CPUs
+[    0.153452] SMP: Total of 2 processors activated (25.09 BogoMIPS).
+[    0.161387] dummy: 
+[    0.161730] NET: Registered protocol family 16
+[    0.162168] AXI: msm_bus_fabric_init_driver(): msm_bus_fabric_init_driver
+[    0.163698] meminfo_init: smem ram ptable found: ver: 0 len: 5
+[    0.163698] Found 1 memory banks grouped into 8 memory regions
+[    0.163855] gpiochip_add: registered GPIOs 0 to 151 on device: msmgpio
+[    0.164198] smem_find(137, 80): wrong size 72
+[    0.164229] socinfo_init: v6, id=204, ver=2.0, raw_id=2313, raw_ver=2313, hw_plat=0,  hw_plat_ver=65536
+[    0.164229]  accessory_chip=0 hw_plat_subtype=0
+[    0.164261] msm_rpm_init: RPM firmware 3.0.16777342
+[    0.168291] clk_tbl_nss - loaded
+[    0.178038] initializing GSBI1 UART clocks
+[    0.189690] adding GSBI1 HSUART
+[    0.190159] hw-breakpoint: found 5 (+1 reserved) breakpoint and 4 watchpoint registers.
+[    0.190159] hw-breakpoint: maximum watchpoint size is 8 bytes.
+[    0.190409] msm_dmov_memcpy_init: Success
+[    0.195064] qup_i2c qup_i2c.3: Could not get core_clk
+[    0.195064] qup_i2c: probe of qup_i2c.3 failed with error -2
+[    0.196063] sps:BAM 0x12244000 enabled: ver:0x5, number of pipes:20
+[    0.196094] sps:BAM 0x12244000 is registered.
+[    0.196344] sps:sps is ready.
+[    0.197719] msm_pcie_setup: WNC-Jimmy: PCI/e
+[    0.230709] msm_pcie_setup: link initialized
+[    0.230959] PCI host bridge to bus 0000:00
+[    0.230959] pci_bus 0000:00: root bus resource [mem 0x08000000-0x0fefffff]
+[    0.231021] pci 0000:00:00.0: [17cb:0101] type 01 class 0xff0000
+[    0.231271] pci 0000:00:00.0: supports D1
+[    0.231271] pci 0000:00:00.0: PME# supported from D0 D1 D3hot
+[    0.231365] PCI: bus0: Fast back to back transfers disabled
+[    0.231396] pci 0000:00:00.0: bridge configuration invalid ([bus 00-00]), reconfiguring
+[    0.231583] pci 0000:01:00.0: [168c:0040] type 00 class 0x028000
+[    0.231677] pci 0000:01:00.0: reg 10: [mem 0x00000000-0x001fffff 64bit]
+[    0.232021] pci 0000:01:00.0: PME# supported from D0 D3hot D3cold
+[    0.232083] PCI: bus1: Fast back to back transfers disabled
+[    0.233114] msm_pcie_setup: WNC-Jimmy: PCI/e
+[    0.270852] msm_pcie_setup: link initialized
+[    0.271071] PCI host bridge to bus 0000:02
+[    0.271102] pci_bus 0000:02: root bus resource [mem 0x2e000000-0x31efffff]
+[    0.271134] pci 0000:02:00.0: [17cb:0101] type 01 class 0xff0000
+[    0.271383] pci 0000:02:00.0: supports D1
+[    0.271383] pci 0000:02:00.0: PME# supported from D0 D1 D3hot
+[    0.271477] PCI: bus2: Fast back to back transfers disabled
+[    0.271477] pci 0000:02:00.0: bridge configuration invalid ([bus 00-00]), reconfiguring
+[    0.271665] pci 0000:03:00.0: [168c:0040] type 00 class 0x028000
+[    0.271758] pci 0000:03:00.0: reg 10: [mem 0x00000000-0x001fffff 64bit]
+[    0.272102] pci 0000:03:00.0: PME# supported from D0 D3hot D3cold
+[    0.272164] PCI: bus3: Fast back to back transfers disabled
+[    0.273164] msm_pcie_setup: WNC-Jimmy: PCI/e
+[    0.290877] msm_pcie_setup: link initialized
+[    0.291096] PCI host bridge to bus 0000:04
+[    0.291096] pci_bus 0000:04: root bus resource [mem 0x32000000-0x35efffff]
+[    0.291159] pci 0000:04:00.0: [17cb:0101] type 01 class 0xff0000
+[    0.291377] pci 0000:04:00.0: supports D1
+[    0.291377] pci 0000:04:00.0: PME# supported from D0 D1 D3hot
+[    0.291471] PCI: bus4: Fast back to back transfers disabled
+[    0.291471] pci 0000:04:00.0: bridge configuration invalid ([bus 00-00]), reconfiguring
+[    0.291690] pci 0000:05:00.0: [168c:0050] type 00 class 0x028000
+[    0.291752] pci 0000:05:00.0: reg 10: [mem 0x00000000-0x001fffff 64bit]
+[    0.291940] pci 0000:05:00.0: reg 30: [mem 0x00000000-0x0000ffff pref]
+[    0.292096] pci 0000:05:00.0: supports D1
+[    0.292096] pci 0000:05:00.0: PME# supported from D0 D1 D3hot
+[    0.292189] PCI: bus5: Fast back to back transfers disabled
+[    0.292845] pci 0000:04:00.0: BAR 8: assigned [mem 0x32000000-0x321fffff]
+[    0.292845] pci 0000:04:00.0: BAR 9: assigned [mem 0x32200000-0x322fffff pref]
+[    0.292877] pci 0000:05:00.0: BAR 0: assigned [mem 0x32000000-0x321fffff 64bit]
+[    0.292908] pci 0000:05:00.0: BAR 6: assigned [mem 0x32200000-0x3220ffff pref]
+[    0.292908] pci 0000:04:00.0: PCI bridge to [bus 05-05]
+[    0.292939] pci 0000:04:00.0:   bridge window [mem 0x32000000-0x321fffff]
+[    0.292939] pci 0000:04:00.0:   bridge window [mem 0x32200000-0x322fffff pref]
+[    0.292970] PCI: enabling device 0000:04:00.0 (0140 -> 0143)
+[    0.293033] pci 0000:02:00.0: BAR 8: assigned [mem 0x2e000000-0x2e1fffff]
+[    0.293033] pci 0000:03:00.0: BAR 0: assigned [mem 0x2e000000-0x2e1fffff 64bit]
+[    0.293064] pci 0000:02:00.0: PCI bridge to [bus 03-03]
+[    0.293095] pci 0000:02:00.0:   bridge window [mem 0x2e000000-0x2e1fffff]
+[    0.293127] PCI: enabling device 0000:02:00.0 (0140 -> 0143)
+[    0.293189] pci 0000:00:00.0: BAR 8: assigned [mem 0x08000000-0x081fffff]
+[    0.293189] pci 0000:01:00.0: BAR 0: assigned [mem 0x08000000-0x081fffff 64bit]
+[    0.293220] pci 0000:00:00.0: PCI bridge to [bus 01-01]
+[    0.293252] pci 0000:00:00.0:   bridge window [mem 0x08000000-0x081fffff]
+[    0.293283] PCI: enabling device 0000:00:00.0 (0140 -> 0143)
+[    0.307560] bio: create slab <bio-0> at 0
+[    0.309184] SCSI subsystem initialized
+[    0.309778] libata version 3.00 loaded.
+[    0.310840] spi_qsd spi_qsd.5: master is unqueued, this is deprecated
+[    0.314776] Switching to clocksource gp_timer
+[    0.334895] NET: Registered protocol family 2
+[    0.348672] IP route cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.349297] TCP established hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.349422] TCP bind hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.349578] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.349609] TCP: reno registered
+[    0.349609] UDP hash table entries: 128 (order: 0, 4096 bytes)
+[    0.349640] UDP-Lite hash table entries: 128 (order: 0, 4096 bytes)
+[    0.350234] NET: Registered protocol family 1
+[    0.350359] PCI: CLS 64 bytes, default 64
+[    0.737988] Detected 5 counters on the L2CC PMU.
+[    0.739050] smd: register irq failed on wcnss_a11
+[    0.739081] smd: deregistering IRQs
+[    0.739144] SMD: smd_core_platform_init() failed
+[    0.739893] smem_find(427, 88): wrong size 24
+[    0.739893] get_bootconfig_partition: no dual boot info in shared memory
+[    0.752827] acpuclk-ipq806x acpuclk-ipq806x: SPEED BIN: 0
+[    0.752827] acpuclk-ipq806x acpuclk-ipq806x: ACPU PVS: 1
+[    0.758762] acpuclk-ipq806x acpuclk-ipq806x: CPU0: 6 frequencies supported
+[    0.758762] acpuclk-ipq806x acpuclk-ipq806x: CPU1: 6 frequencies supported
+[    0.759731] msm_rpm_log_probe: OK
+[    0.783817] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.783848] jffs2: version 2.2. (NAND) (SUMMARY) (LZMA) (RTIME) (CMODE_PRIORITY) © 2001-2006 Red Hat, Inc.
+[    0.786129] msgmni has been set to 400
+[    0.787472] io scheduler noop registered
+[    0.787503] io scheduler deadline registered (default)
+[    0.788909] Serial: 8250/16550 driver, 2 ports, IRQ sharing disabled
+[    0.790877] msm_serial_hs.0: ttyHS0 at MMIO 0x12450000 (irq = 225) is a MSM HS UART
+[    0.791408] msm_serial_hs module loaded
+[    0.791627] msm_serial_hsl: detected port #1
+[    0.791815] msm_serial_hsl.1: ttyHSL1 at MMIO 0x16340000 (irq = 184) is a MSM
+[    0.791877] msm_serial_hsl: console setup on port #1
+[    1.602717] console [ttyHSL1] enabled
+[    1.606716] msm_serial_hsl: driver initialized
+[    1.616119] ahci ahci.0: forcing PORTS_IMPL to 0x1
+[    1.619900] ahci ahci.0: AHCI 0001.0300 32 slots 1 ports 6 Gbps 0x1 impl platform mode
+[    1.627835] ahci ahci.0: flags: ncq sntf pm led clo only pmp pio slum part ccc apst 
+[    1.636332] scsi0 : ahci_platform
+[    1.639518] ata1: SATA max UDMA/133 mmio [mem 0x29000000-0x2900017f] port 0x100 irq 241
+[    1.649734] msm_nand_probe: phys addr 0x1ac00000 
+[    1.653420] msm_nand_probe: dmac 0x3
+[    1.657075] msm_nand_probe: allocated dma buffer at ffdfc000, dma_addr 4d856000
+[    1.664511] flash_onfi_probe: No partition info available
+[    1.670071] status: c03020
+[    1.672352] nandid: 1580a101 maker 01 device a1
+[    1.677007] Found a supported NAND device
+[    1.680849] NAND Controller ID : 0x4030
+[    1.684661] NAND Device ID  : 0x1580a101
+[    1.688628] Buswidth : 8 Bits
+[    1.691533] Density  : 128 MByte
+[    1.694751] Pagesize : 2048 Bytes
+[    1.698094] Erasesize: 131072 Bytes
+[    1.701499] Oobsize  : 64 Bytes
+[    1.704623] CFG0 Init  : 0xa8d408c0
+[    1.708153] CFG1 Init  : 0x0004745c
+[    1.711590] ECCBUFCFG  : 0x00000203
+[    1.715651] Creating 2 MTD partitions on "msm_nand":
+[    1.720024] 0x000007d80000-0x000007f80000 : "cal"
+[    1.729240] 0x000001fc0000-0x000002140000 : "u-boot"
+[    1.737457] m25p80 spi5.0: found pm25lv512, expected s25fl512s
+[    1.742299] m25p80 spi5.0: pm25lv512 (64 Kbytes)
+[    1.750203] UBI: attaching mtd0 to ubi0
+[    1.753014] UBI: physical eraseblock size:   131072 bytes (128 KiB)
+[    1.759387] UBI: logical eraseblock size:    126976 bytes
+[    1.764729] UBI: smallest flash I/O unit:    2048
+[    1.769384] UBI: VID header offset:          2048 (aligned 2048)
+[    1.775351] UBI: data offset:                4096
+[    1.795438] UBI: max. sequence number:       3
+[    1.809184] UBI: attached mtd0 to ubi0
+[    1.811902] UBI: MTD device name:            "cal"
+[    1.816744] UBI: MTD device size:            2 MiB
+[    1.821462] UBI: number of good PEBs:        16
+[    1.826023] UBI: number of bad PEBs:         0
+[    1.830396] UBI: number of corrupted PEBs:   0
+[    1.834864] UBI: max. allowed volumes:       128
+[    1.839425] UBI: wear-leveling threshold:    4096
+[    1.844111] UBI: number of internal volumes: 1
+[    1.848578] UBI: number of user volumes:     1
+[    1.852952] UBI: available PEBs:             0
+[    1.857450] UBI: total number of reserved PEBs: 16
+[    1.862168] UBI: number of PEBs reserved for bad PEB handling: 2
+[    1.868197] UBI: max/mean erase counter: 2/1
+[    1.872414] UBI: image sequence number:  174698806
+[    1.877319] UBI: background thread "ubi_bgt0d" started, PID 596
+[    1.909372] GPIO Bitbanged MDIO: probed
+[    1.912402] i2c /dev entries driver
+[    1.921805] cpuidle: using governor ladder
+[    1.924898] cpuidle: using governor menu
+[    1.929615] mmc0: SDCC Version: 0x06000018
+[    1.933177] mmc0: bam physical base=0x12182000
+[    1.937363] mmc0: bam virtual base=0xd08d4000
+[    1.941611] sps:BAM 0x12182000 is registered.
+[    1.945829] mmc0: BAM device registered. bam_handle=0xcfa0a400
+[    1.951765] sps:BAM 0x12182000 enabled: ver:0x5, number of pipes:6
+[    1.958200] mmc0: Qualcomm MSM SDCC-BAM at 0x0000000012182000 irq 128
+[    1.964386] mmc0: Qualcomm MSM SDCC-DML at 0x0000000012180800
+[    1.973289] mmc0: Qualcomm MSM SDCC-core at 0x0000000012180000 irq 134,294 dma -1 dmacrcri -1
+[    1.980880] mmc0: Controller capabilities: 0x0000019a
+[    1.986285] mmc0: 8 bit data mode disabled
+[    1.989909] mmc0: 4 bit data mode enabled
+[    1.993908] mmc0: polling status mode disabled
+[    2.002967] ata1: SATA link down (SStatus 0 SControl 300)
+[    2.004810] mmc0: MMC clock 400000 -> 192000000 Hz, PCLK 0 Hz
+[    2.004810] mmc0: Slot eject status = 1
+[    2.004810] mmc0: Power save feature enable = 1
+[    2.004810] mmc0: SPS-BAM data transfer mode available
+[    2.005248] TCP: cubic registered
+[    2.005248] NET: Registered protocol family 17
+[    2.005342] Bridge firewalling registered
+[    2.005373] 8021q: 802.1Q VLAN Support v1.8
+[    2.042424] VFP support v0.3: implementor 51 architecture 64 part 4d variant 2 rev 0
+[    2.050140] Registering SWP/SWPB emulation handler
+[    2.054920] clock_late_init: Removing enables held for handed-off clocks
+[    2.066916] ipq_nss_get_mac_addr: MAC[0]: ff:ff:ff:ff:ff:ff
+[    2.071727] ipq_nss_get_mac_addr: MAC[1]: ff:ff:ff:ff:ff:ff
+[    2.077288] ipq_nss_get_mac_addr: MAC[2]: ff:ff:ff:ff:ff:ff
+[    2.082849] ipq_nss_get_mac_addr: MAC[3]: ff:ff:ff:ff:ff:ff
+[    2.088378] no pmic restart interrupt specified
+[    2.094220] msm_cache_dump_probe: could not register L2 buffer ret = -22.
+[    2.126054] Freeing init memory: 40968K
+[    6.073227] ocf: module license 'BSD' taints kernel.
+[    6.077163] Disabling lock debugging due to kernel taint
+[    6.106935] ssdk_plat_init start
+[    6.109184] Register QCA PHY driver
+[    6.113527] unsupported QCA device
+[    6.117119] qca-ssdk module init failed! (code: -100)
+[    6.160699] NET: Registered protocol family 10
+[    6.213558] usbcore: registered new interface driver usbfs
+[    6.218213] usbcore: registered new interface driver hub
+[    6.223492] usbcore: registered new device driver usb
+[    6.253701] md: linear personality registered for level -1
+[    6.264073] md: raid0 personality registered for level 0
+[    6.274726] md: raid1 personality registered for level 1
+[    6.285691] NTFS driver 2.1.30 [Flags: R/O MODULE].
+[    6.315620] PPP generic driver version 2.4.2
+[    6.408309] PPP MPPE Compression module registered
+[    6.418712] **********************************************************
+[    6.424023] * Driver    :NSS GMAC Driver for RTL v(3.72a)
+[    6.429553] * Version   :1.0
+[    6.432271] * Copyright :Copyright (c) 2013-2014 The Linux Foundation. All rights reserved.
+[    6.440674] **********************************************************
+[    6.447610] GMAC3(cf715c80) Invalid MAC@ - using 8e:8f:90:91:92:93
+[    6.472602] L2TP core driver, V2.0
+[    6.481193] L2TP netlink interface
+[    6.519962] nss_driver - fw of size 319552  bytes copied to load addr: 40000000, nss_id : 0
+[    6.545173] nss_driver - Turbo Support 1
+[    6.549328] bf28bdb5: NSS Shaping is enabled, handler id: 0
+[    6.578163] nss_driver - fw of size 186688  bytes copied to load addr: 40800000, nss_id : 1
+[    6.607310] Error - Duplicate Interface CB Registered for interface 75
+[    6.612808] Error - Duplicate Interface CB Registered for interface 78
+[    6.629896] IPv6 over IPv4 tunneling driver
+[    6.643111] <NSS-CRYPTO>:Register with NSS driver-
+[    6.744767] <NSS-CRYPTO>:.
+[    6.746266] <NSS-CRYPTO>:Done
+[    6.887253] <NSS-CRYPTO>:probing engine - 0
+[    6.890471] <NSS-CRYPTO>:init completed for Pipe Pair[0]
+[    6.895813] nss_macsec init success
+[    6.899656] <NSS-CRYPTO>:init completed for Pipe Pair[1]
+[    6.904498] <NSS-CRYPTO>:init completed for Pipe Pair[2]
+[    6.909871] <NSS-CRYPTO>:init completed for Pipe Pair[3]
+[    6.915870] <NSS-CRYPTO>:probing engine - 1
+[    6.919306] <NSS-CRYPTO>:init completed for Pipe Pair[0]
+[    6.924554] <NSS-CRYPTO>:init completed for Pipe Pair[1]
+[    6.925991] gre: GRE over IPv4 demultiplexor driver
+[    6.932114] ip_gre: GRE over IPv4 tunneling driver
+[    6.939550] <NSS-CRYPTO>:init completed for Pipe Pair[2]
+[    6.939831] bonding: Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+[    6.951983] <NSS-CRYPTO>:init completed for Pipe Pair[3]
+[    6.957888] <NSS-CRYPTO>:probing engine - 2
+[    6.961387] <NSS-CRYPTO>:init completed for Pipe Pair[0]
+[    6.966729] <NSS-CRYPTO>:init completed for Pipe Pair[1]
+[    6.971946] <NSS-CRYPTO>:init completed for Pipe Pair[2]
+[    6.977288] <NSS-CRYPTO>:init completed for Pipe Pair[3]
+[    6.980787] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    6.988534] <NSS-CRYPTO>:probing engine - 3
+[    6.992064] <NSS-CRYPTO>:init completed for Pipe Pair[0]
+[    6.997344] <NSS-CRYPTO>:init completed for Pipe Pair[1]
+[    7.002592] <NSS-CRYPTO>:init completed for Pipe Pair[2]
+[    7.007935] <NSS-CRYPTO>:init completed for Pipe Pair[3]
+[    7.035551] NET: Registered protocol family 24
+[    7.080724] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    7.086316] msm_hsusb_host msm_hsusb_host: unable to find transceiver
+[    7.102061] nf_conntrack version 0.5.0 (3842 buckets, 15368 max)
+[    7.163074] PPPoL2TP kernel driver, V2.0
+[    7.172289] PPTP driver version 0.8.5
+[    7.352639] xt_time: kernel timezone is -0000
+[    7.559106] nf_conntrack_rtsp v0.6.21 loading
+[    7.568728] nf_nat_rtsp v0.6.21 loading
+[    7.591408] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    7.683567] ipq-dwc3 ipq-dwc3.0: unable to read platform data num of dbm eps
+[    7.790659] xhci-hcd xhci-hcd.0: xHCI Host Controller
+[    7.794782] xhci-hcd xhci-hcd.0: new USB bus registered, assigned bus number 1
+[    7.801968] xhci-hcd xhci-hcd.0: irq 142, io mem 0x11000000
+[    7.807935] xHCI xhci_add_endpoint called for root hub
+[    7.807935] xHCI xhci_check_bandwidth called for root hub
+[    7.808184] hub 1-0:1.0: USB hub found
+[    7.811184] hub 1-0:1.0: 1 port detected
+[    7.815276] xhci-hcd xhci-hcd.0: xHCI Host Controller
+[    7.820118] xhci-hcd xhci-hcd.0: new USB bus registered, assigned bus number 2
+[    7.827678] xHCI xhci_add_endpoint called for root hub
+[    7.827678] xHCI xhci_check_bandwidth called for root hub
+[    7.827866] hub 2-0:1.0: USB hub found
+[    7.831052] hub 2-0:1.0: 1 port detected
+[    7.836738] ipq-dwc3 ipq-dwc3.1: unable to read platform data num of dbm eps
+[    7.943392] xhci-hcd xhci-hcd.1: xHCI Host Controller
+[    7.947453] xhci-hcd xhci-hcd.1: new USB bus registered, assigned bus number 3
+[    7.954670] xhci-hcd xhci-hcd.1: irq 237, io mem 0x10000000
+[    7.960637] xHCI xhci_add_endpoint called for root hub
+[    7.960637] xHCI xhci_check_bandwidth called for root hub
+[    7.960824] hub 3-0:1.0: USB hub found
+[    7.963886] hub 3-0:1.0: 1 port detected
+[    7.967978] xhci-hcd xhci-hcd.1: xHCI Host Controller
+[    7.972852] xhci-hcd xhci-hcd.1: new USB bus registered, assigned bus number 4
+[    7.980381] xHCI xhci_add_endpoint called for root hub
+[    7.980381] xHCI xhci_check_bandwidth called for root hub
+[    7.980599] hub 4-0:1.0: USB hub found
+[    7.983755] hub 4-0:1.0: 1 port detected
+[    8.002436] snd_soc_core: Unknown symbol regmap_init_i2c (err 0)
+[    8.055139] snd_soc_ipq_cpu_dai: Unknown symbol snd_soc_unregister_dais (err 0)
+[    8.061480] snd_soc_ipq_cpu_dai: Unknown symbol snd_soc_register_dais (err 0)
+[    8.074539] snd_soc_ipq_lpass_codec: Unknown symbol snd_soc_register_codec (err 0)
+[    8.081193] snd_soc_ipq_lpass_codec: Unknown symbol snd_soc_unregister_codec (err 0)
+[    8.094751] snd_soc_ipq_pcm_spdif: Unknown symbol snd_soc_register_platform (err 0)
+[    8.101530] snd_soc_ipq_pcm_spdif: Unknown symbol snd_soc_set_runtime_hwparams (err 0)
+[    8.109403] snd_soc_ipq_pcm_spdif: Unknown symbol snd_soc_unregister_platform (err 0)
+[    8.123024] snd_soc_ipq_pcm_mi2s: Unknown symbol snd_soc_register_platform (err 0)
+[    8.129709] snd_soc_ipq_pcm_mi2s: Unknown symbol snd_soc_set_runtime_hwparams (err 0)
+[    8.137457] snd_soc_ipq_pcm_mi2s: Unknown symbol snd_soc_unregister_platform (err 0)
+[    8.151077] snd_soc_ipq_pcm_voip: Unknown symbol snd_soc_register_platform (err 0)
+[    8.157794] snd_soc_ipq_pcm_voip: Unknown symbol snd_soc_set_runtime_hwparams (err 0)
+[    8.165604] snd_soc_ipq_pcm_voip: Unknown symbol snd_soc_unregister_platform (err 0)
+[    8.180631] usbcore: registered new interface driver cdc_acm
+[    8.185285] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    8.202061] Initializing USB Mass Storage driver...
+[    8.206123] usbcore: registered new interface driver usb-storage
+[    8.211871] USB Mass Storage support registered.
+[    8.224148] fuse init (API version 7.18)
+[    8.404779] usb 3-1: new full-speed USB device number 2 using xhci-hcd
+[    8.410371] usb 3-1: Device not responding to set address.
+[    8.624867] usb 3-1: Device not responding to set address.
+[    8.834801] usb 3-1: device not accepting address 2, error -71
+[    9.074789] usb 3-1: new full-speed USB device number 3 using xhci-hcd
+[    9.080381] usb 3-1: Device not responding to set address.
+[    9.294814] usb 3-1: Device not responding to set address.
+[    9.504779] usb 3-1: device not accepting address 3, error -71
+[    9.744767] usb 3-1: new full-speed USB device number 4 using xhci-hcd
+[    9.754889] usb 3-1: Device not responding to set address.
+[    9.966010] usb 3-1: Device not responding to set address.
+[    9.974726] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    9.981443] device eth0 entered promiscuous mode
+[    9.985504] ADDRCONF(NETDEV_UP): br-lan: link is not ready
+[   10.174726] usb 3-1: device not accepting address 4, error -71
+[   10.414745] usb 3-1: new full-speed USB device number 5 using xhci-hcd
+[   10.420306] usb 3-1: Device not responding to set address.
+[   10.634801] usb 3-1: Device not responding to set address.
+[   10.844704] usb 3-1: device not accepting address 5, error -71
+[   10.849609] hub 3-0:1.0: unable to enumerate USB device on port 1
+[   13.459512] br-lan: port 1(eth0) entered forwarding state
+[   13.463917] br-lan: port 1(eth0) entered forwarding state
+[   13.469415] macsec_ncb  mac_id:0x3 speed:0x3e8
+[   13.473726] eth0: 1000 Mbps Full Duplex
+[   13.477850] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   13.483348] macsec_ncb  mac_id:0x3 speed:0x3e8
+[   13.487785] ADDRCONF(NETDEV_CHANGE): br-lan: link becomes ready
+[   15.454701] br-lan: port 1(eth0) entered forwarding state
+[   20.825054] Enabling NSS RPS
+[   20.975132] msm_thermal: Max frequency reset for cpu0
+[   20.979131] msm_thermal: Max frequency reset for cpu1
+[   20.984192] msm_thermal: enabled = 0

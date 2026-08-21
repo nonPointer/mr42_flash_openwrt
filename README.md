@@ -22,6 +22,7 @@ OpenWrt 官方镜像默认的 `ath10k-ct` 驱动**把 5GHz 发射锁死在 40MHz
 | [`packages.md`](packages.md) | 定制固件包列表（firmware-selector 网页/API），含必须的驱动替换 |
 | [`ath10k-ct-issue.md`](ath10k-ct-issue.md) | ath10k-ct 40MHz 限制：症状/排查/修复/实测 |
 | [`radio-config.md`](radio-config.md) | 刷完后的无线 + 哑 AP 配置（设备端 UCI 手动命令） |
+| [`bootlogs/`](bootlogs/) | 同机 OEM 诊断模式 vs OpenWrt 的两份 `dmesg`，对照参考 |
 | [`hardware-notes.md`](hardware-notes.md) | 射频能力/功率天花板/监管域/overlay whiteout 等实测笔记 |
 | [`nand-forensics.md`](nand-forensics.md) | 原厂 NAND 逆向：代号映射、RSA 签名锁、OpenWrt 血统 |
 | [`toolchain-sha256.md`](toolchain-sha256.md) | 全部文件的下载地址 + sha256 校验 |
