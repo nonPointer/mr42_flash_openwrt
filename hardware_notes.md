@@ -176,8 +176,7 @@ MR42 的 path 由硬件决定，永不改变：
 | `soc/1b700000.pcie/...` | QCA9990 **2.4GHz 3×3** | |
 | `soc/1b900000.pcie/...` | `168c:0050` 双频 **1×1** | 扫描射频，不开 SSID |
 
-现成脚本见同目录 **`uci-defaults-mr42-ap.sh`**（按 path 判断，可直接贴进
-firmware-selector 的 first-boot script）。退化情形按 `band` 判断，同样不用编号。
+手动命令见 **`radio-config.md`**（按 `band`/`path` 判断，不用 radioN 编号）。
 
 ## ⚠️ 无线配置的三个非直觉行为
 

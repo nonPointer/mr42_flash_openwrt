@@ -4,7 +4,7 @@
 换成标准 `ath10k` 后，实测下行从 **~300 Mbps 提升到 ~500 Mbps（+67%）**。
 
 > 本文档记录 2026-08-21 在一台 Meraki MR42（OpenWrt 25.12.5）上的完整排查与修复。
-> 结论已同步进 `04_build_custom_firmware.sh` 和 `packages.md`，按那两个文件构建的固件不受此问题影响。
+> 修复已写进 `packages.md` 的包列表，按它构建的固件不受此问题影响。
 
 ---
 
@@ -90,13 +90,7 @@ MR42 的 `device_packages` 里**写死了** `ath10k-firmware-qca9887-ct` 和
 > `find /overlay/upper -type c -exec rm -f {} \;`
 > 详见 `hardware_notes.md` 的 whiteout 章节。
 
-### 用本目录的脚本（已包含该修复）
-
-```bash
-./04_build_custom_firmware.sh
-```
-
-### 或在网页上手动构建
+### 在网页上构建（推荐）
 
 https://firmware-selector.openwrt.org/ → 搜 MR42 → 25.12.5 →
 "Customize installed packages" → 粘贴 `packages.md` 里的一行版包列表。
@@ -169,4 +163,3 @@ ath10k 的很多统计**不是驱动算的，是固件上报的**。CT 固件靠
 - [greearb/ath10k-ct](https://github.com/greearb/ath10k-ct)（CT 驱动与固件上游）
 - 本目录 `hardware_notes.md` — 完整硬件实测笔记（射频能力、功率、overlay whiteout 等）
 - 本目录 `packages.md` — 完整包清单
-- 本目录 `04_build_custom_firmware.sh` — 一键构建（已含本修复）

@@ -101,3 +101,22 @@ kmod-batman-adv batctl-default mesh11sd
 
 > ⚠️ 查包名时注意文件名含 `~`（如 `luci-app-dawn-26.230.68036~04ab59d.apk`），
 > 正则字符集漏掉 `~` 会把包名截断成碎片、误判为"不存在"。
+
+
+## 命令行构建（可选，跨平台）
+
+不想用网页也可以直接调 ASU API（把上面的一行版包列表填进 `packages` 数组）：
+
+```sh
+cat > req.json <<'JSON'
+{ "target":"ipq806x/generic", "profile":"meraki_mr42", "version":"25.12.5",
+  "packages":[ "...把一行版包列表逐项填进来..." ] }
+JSON
+# 提交构建，拿到 request_hash
+curl -s -X POST https://sysupgrade.openwrt.org/api/v1/build \
+     -H 'Content-Type: application/json' -d @req.json | tee resp.json
+# 轮询 https://sysupgrade.openwrt.org/api/v1/build/<request_hash> 直到 status=200，
+# 再从 https://sysupgrade.openwrt.org/store/<hash>/<image名> 下载并核对返回的 sha256。
+```
+
+> 同样的包列表 → 相同 request_hash → 可复现同一份固件（方便批量多台）。

@@ -2,7 +2,29 @@
 
 > 来源: [clayface/openwrt-cryptid README](https://github.com/clayface/openwrt-cryptid)（md5+sha256 实测一致）、
 > [downloads.openwrt.org 25.12.5 sha256sums](https://downloads.openwrt.org/releases/25.12.5/targets/ipq806x/generic/sha256sums)。
-> 下载脚本 `01_fetch_toolchain.sh` 已内置下表并逐文件校验，任一不符立即中止。
+> 手动下载：对下表每个 URL `curl -LO <url>`（或 wget），再逐个校验：
+> macOS `shasum -a256 <文件>`，Linux `sha256sum <文件>`，对照本表。任一不符不要使用。
+
+
+## 手动下载（免拆机路线只需前两个 + 自建固件）
+
+```sh
+# clayface 工具（u-boot + 网络引导 initramfs）
+base=https://raw.githubusercontent.com/clayface/openwrt-cryptid/main
+curl -LO $base/mr42_u-boot.mbn
+curl -LO $base/openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb
+
+# u-boot 只认不带 meraki_mr42- 的文件名 → 建个别名（硬链接/复制均可）
+ln openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb \
+   openwrt-ipq806x-generic-initramfs-fit-uImage.itb
+
+# 校验（macOS: shasum -a256 ; Linux: sha256sum），对照下表
+shasum -a256 mr42_u-boot.mbn openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb
+```
+
+> 拆机串口路线另需 `mr42_u-boot.bin` 和 `ubootwrite.py`（同一 base）。
+> 最终固件不在此下载——按 `packages.md` 用 firmware-selector 构建（**务必换标准 ath10k**）。
+
 
 ## clayface/openwrt-cryptid（ubootwrite 注入 + 二级 u-boot + 老 initramfs）
 

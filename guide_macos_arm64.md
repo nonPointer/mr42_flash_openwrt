@@ -1,7 +1,8 @@
 # Meraki MR42 → OpenWrt 刷机指南（macOS arm64 版）
 
-> 配套脚本: `01_fetch_toolchain.sh`（下载+校验）、`ubootwrite3.py`（python3 版注入）、
-> `tftpd3.py`（零依赖 TFTP 服务器）、`serial_shell.sh`（串口终端）。
+> 本指南以 macOS 为主给出 host 端示例；刷机步骤为**手动命令**，其他平台照做即可。
+> 工具文件：`tftpd3.py`（零依赖 TFTP 服务器）、`ubootwrite3.py`（串口注入，仅拆机路线）。
+> 精简版五步流程见 `FLASH-STEPS.md`。
 > 权威流程来源: [OpenWrt wiki MR42](https://openwrt.org/toh/meraki/mr42)、
 > [clayface/openwrt-cryptid](https://github.com/clayface/openwrt-cryptid)、
 > [hayao0819 批量刷机实录](https://hayao0819.com/blog/posts/20241123/mr42-openwrt/)（2024-11，10 台）。
@@ -12,7 +13,7 @@
 > | | 免拆机（**第 8 节**） | 拆机串口（第 2/4/5 节） |
 > |---|---|---|
 > | 前提 | 能进诊断模式（按 reset 后**蓝灯**） | 诊断模式进不去时的后路 |
-> | 工具 | `02_flash_uboot_diagnostic.sh` → `03_flash_openwrt.sh` | `ubootwrite3.py` + `serial_shell.sh` |
+> | 命令 | `FLASH-STEPS.md` 手动命令 | `ubootwrite3.py` + `screen` 串口 |
 > | 状态 | **2026-08-20 端到端实测走通** | 未在本机验证 |
 >
 > **先试免拆机。** 能进诊断模式就完全不需要拆机、不需要串口、不需要 pyserial。
@@ -106,7 +107,7 @@ UART 焊盘在板上，4 孔:
 
 ```bash
 cd mr42-flash
-./01_fetch_toolchain.sh          # 下载到 ./toolchain/，任一校验失败立即中止
+# 按 TOOLCHAIN_SHA256.md 手动下载并逐个校验 sha256（curl/wget 皆可）
 ```
 
 ### 3.2 建 python3 环境（ubootwrite3.py 需要 pyserial）
@@ -136,8 +137,8 @@ sudo python3 ../tftpd3.py            # 69 端口 <1024 需要 sudo；macOS 会�
 ### 3.4 打开串口终端（观察用）
 
 ```bash
-./serial_shell.sh                          # 先看设备名
-./serial_shell.sh /dev/cu.usbserial-XXXX   # 115200 8N1
+ls /dev/cu.usbserial-*                      # 先看设备名（macOS）
+screen /dev/cu.usbserial-XXXX 115200        # 8N1，退出 Ctrl-A K
 ```
 
 上电 AP → 应看到 u-boot banner + 启动日志。**先做第 1 步的版本确认再继续。**
@@ -181,7 +182,7 @@ clayface 的 initramfs 是**完整救援系统**（2026-08 拆包实测已内置
 initramfs 起来后（白灯常亮），**用串口操作**（此时 AP 的 IP 是 DHCP，串口最稳）:
 
 ```bash
-./serial_shell.sh /dev/cu.usbserial-XXXX
+screen /dev/cu.usbserial-XXXX 115200
 ```
 
 登录（root，无密码）后:
@@ -244,7 +245,7 @@ sysupgrade /tmp/openwrt-25.12.5-ipq806x-generic-meraki_mr42-squashfs-sysupgrade.
 > 走这条路时，**第 2/3.4/4 节（拆机、串口、ubootwrite）和第 5 节（initramfs 内写 mtd8）
 > 全部跳过** —— u-boot 在诊断模式下就已写好了。
 >
-> 自动化脚本：`./02_flash_uboot_diagnostic.sh` → `./03_flash_openwrt.sh`
+> 精简五步：见 `FLASH-STEPS.md`（全手动命令）。
 
 ### 8.1 进入诊断模式
 
@@ -265,7 +266,7 @@ mtd3: 00136000 0001f000 "ART"
 
 ```bash
 cd toolchain && sudo python3 ../tftpd3.py --dir .    # 另开窗口，保持运行
-./02_flash_uboot_diagnostic.sh
+# ↓ 下面是逐条手动命令
 ```
 
 脚本做的事（**手动操作时也必须按这个顺序**）：
@@ -315,7 +316,7 @@ ipaddr=192.168.1.100
 而 clayface 仓库里的文件叫 `openwrt-ipq806x-generic-**meraki_mr42-**initramfs-fit-uImage.itb`。
 **名字对不上 → TFTP 404 → 永远进不了 initramfs**，没串口时表现只是"白灯不亮"，极难定位。
 
-`01_fetch_toolchain.sh` 已自动建好该别名。手动的话：
+下载时用正确文件名，或建个别名：
 
 ```bash
 ln -f toolchain/openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb \
@@ -349,7 +350,7 @@ ln -f toolchain/openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb \
 `tftpd3.py` 窗口会打印对 `.itb`（约 9MB）的请求 —— **无串口时这是唯一的进度指示器**。
 白灯常亮后：`ssh root@192.168.1.1`（dropbear，首次无密码）。
 
-**此后直接跳到第 6 节（删 UBI 卷）和第 7 节（sysupgrade），或直接跑 `./03_flash_openwrt.sh`。
+**此后直接做第 6 节（删 UBI 卷）和第 7 节（sysupgrade）。
 不需要第 5 节 —— u-boot 已经在 8.2 写好了。**
 
 ## 9. 故障排查
@@ -364,10 +365,10 @@ ln -f toolchain/openwrt-ipq806x-generic-meraki_mr42-initramfs-fit-uImage.itb \
 | 白灯但不进 initramfs | TFTP 文件不对 → 用 clayface 的 initramfs（sha256 见 TOOLCHAIN_SHA256.md） |
 | `mtd erase` 报错 | 没 insmod mtd-rw；或内核太老（clayface 5.10 镜像没问题） |
 | 刷完 mtd8 重启变砖 | 没 sysupgrade 就重启了——只能 NAND 编程器救（见下） |
-| **sysupgrade 打印 "Commencing upgrade" 后什么都没发生** | **进了 failsafe，没有 ubusd**。sysupgrade 最后一步是 `ubus call system sysupgrade` 交给 procd，连不上 ubus 就静默失败（设备不重启、版本不变，极易误判为"正在刷"）。修：`ubusd &` 后重试；仍不行则绕过 procd 直接 `export IMAGE=/tmp/xxx.bin INTERACTIVE=0 VERBOSE=1; sh /lib/upgrade/do_stage2`。`03_flash_openwrt.sh` 已自动处理 |
+| **sysupgrade 打印 "Commencing upgrade" 后什么都没发生** | **进了 failsafe，没有 ubusd**。sysupgrade 最后一步是 `ubus call system sysupgrade` 交给 procd，连不上 ubus 就静默失败（设备不重启、版本不变，极易误判为"正在刷"）。修：`ubusd &` 后重试；仍不行则绕过 procd 直接 `export IMAGE=/tmp/xxx.bin INTERACTIVE=0 VERBOSE=1; sh /lib/upgrade/do_stage2`（见 `FLASH-STEPS.md` ⑤）|
 | `mtd erase` 卡死、之后所有 NAND 操作都挂 | 内核在 `part_fill_badblockstats` Oops，进程卡 D 状态握锁不放，**用户态无法解锁，只能断电**。改用 `flash_erase`，且擦写期间**单会话**操作（见 8.3） |
 | u-boot 反复 TFTP 失败 / 白灯不亮 | 多半是**文件名不匹配**：u-boot 请求的是不带 `meraki_mr42-` 的名字（见 8.3 坑 2）。回读确认：`dd if=/dev/mtd1 bs=64k count=8 \| strings \| grep fit_uimage_initramfs` |
-| initramfs 里没有 uhttpd / LuCI 打不开 | failsafe 模式不启动 uhttpd。刷机用命令行即可（`03_flash_openwrt.sh`），或重新引导时**早点松开 reset** |
+| initramfs 里没有 uhttpd / LuCI 打不开 | failsafe 模式不启动 uhttpd。刷机用命令行即可（见 `FLASH-STEPS.md` ⑤），或重新引导时**早点松开 reset** |
 | `setsid: not found` / `nohup` 不存在 | busybox 精简版没有。用 `sh -c 'trap "" HUP; ...'` 防 SIGHUP |
 | busybox `nc -w` 报 usage | 老 busybox 的 nc 不支持 `-w`。传文件用 `nc IP PORT < file`（设备作客户端），Mac 侧 `nc -l PORT > file` 接收 |
 

@@ -1,4 +1,4 @@
-# 工具链二进制由 01_fetch_toolchain.sh 下载并校验，不入库
+# 工具链二进制（u-boot/initramfs/固件）按 TOOLCHAIN_SHA256.md 手动下载，不入库
 toolchain/
 .DS_Store
 AGENTS.md
