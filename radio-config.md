@@ -142,6 +142,8 @@ uci commit network
 - ⚠️ **客户端才是最终决定者**：dawn/11v 只能建议。不支持 11v 的老设备（粘性客户端）
   只能靠 `kicking` 踢下线来逼其重选，体验不如原生配合顺滑。
 
+- 🔴 **OpenWrt 默认所有 wifi 接口 `disabled='1'`（wifi 默认关）**；配好 radio 后必须 `uci -q delete wireless.<iface>.disabled` 才会广播。
+  ⚠️ 默认启用 = 广播开放 SSID 并桥接 LAN，不安全；生产环境应设 SSID+密码后再启用。
 - 802.11k/v/r 都需要 **full 版 `wpad-mbedtls`**（basic 版无 11v/完整 11k）。
   **11r 只有在设了 WPA2/WPA3-PSK（`encryption`+`key`）后才真正生效**；`encryption=none` 时这些项惰性存在、无害。
   全 fleet 的 `mobility_domain`、SSID、加密、密钥必须一致，FT 才能在 AP 间漫游
