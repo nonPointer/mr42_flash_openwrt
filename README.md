@@ -5,7 +5,7 @@ Cisco Meraki MR42（及 MR52）刷 OpenWrt 的**全手动**资料包：文档 + 
 macOS / Linux / Windows 上都能照做；设备端命令在 busybox 里执行，与 host 平台无关。
 
 > 已在一台 MR42 上端到端验证：免拆机刷成 OpenWrt 25.12.5，标准 ath10k 下 5G 实测
-> ~500Mbps，dawn + 802.11k/v 正常。踩过的坑都写进了文档。
+> ~500Mbps，802.11k/v/r 漫游正常。踩过的坑都写进了文档。
 
 ## 🔴 先读：ath10k-ct 会让 5G 下行腰斩
 

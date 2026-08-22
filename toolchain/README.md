@@ -72,18 +72,19 @@ ln -f openwrt-ipq806x-generic-meraki_mr52-initramfs-fit-uImage.itb \
 指向 ASU 构建的定制固件的**软链接**，免得记那串哈希：
 
 ```
-mr42-custom-latest.bin → openwrt-25.12.5-mr42-dumbap-kvr-c8ad0586.bin
+mr42-custom-latest.bin → openwrt-25.12.5-mr42-dumbap-kvr-nodawn-09657317.bin
 ```
 
 涉及**两个不同的哈希**，别混：
 
-- ASU 生成的原始文件名里有段 `b08d78ad265b` —— **包列表哈希**，只随包集合变化。
+- ASU 生成的原始文件名里有段 `9e6712d342d8` —— **包列表哈希**，只随包集合变化。
   改包才变；只改 first-boot 配置（uci-defaults）它不变，于是不同配置版会撞同名。
-- 所以本仓库把文件重命名为 `...dumbap-kvr-<请求哈希>.bin`，后缀 `c8ad0586` 是
+- 所以本仓库把文件重命名为 `...dumbap-kvr-nodawn-<请求哈希>.bin`，后缀 `09657317` 是
   **ASU 请求哈希**（随包*或* defaults 任一变化而变），用来区分不同配置修订。
 
-当前 `c8ad0586` 版 sha256：`312f98395db7fdd2eca9ba9afc619d7dba0d295062e18a391eb9d33c4766389b`
-（哑 AP + k/v/r + 标准 ath10k + 关防火墙 + 唯一 hostname + dawn 广播 + 默认启用 wifi）。
+当前 `09657317` 版 sha256：`f9ecc5f163db559cbc771568f7673f228efea5c64fba05132871fee1a9799862`
+（哑 AP + 11k/v/r + 标准 ath10k + 无防火墙(`-firewall4`) + 唯一 hostname + 默认启用 wifi + OTA 更新检查；
+无 steering 守护，dawn 与共享 mgmt IP 冲突已弃，详见 `../radio-config.md`）。
 
 > 🔴 **官方原版已挪进 `_unused/`** ——
 > 它带 `ath10k-ct` 驱动，5G 下行会腰斩到 300 Mbps，而且文件名和定制版极其相似，

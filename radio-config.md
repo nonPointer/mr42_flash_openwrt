@@ -15,7 +15,7 @@
 MGMT_IP='192.168.1.1'                             # ← 改这里即可换 mgmt 恢复地址
 MGMT_MASK='255.255.255.0'
 
-# 唯一 hostname —— 多 AP 部署时 mDNS/dawn/日志/DHCP 靠它区分；从 eth0 MAC 自动派生，一份镜像刷所有设备
+# 唯一 hostname —— 多 AP 部署时日志/DHCP 客户端列表/SSH 靠它区分；从 eth0 MAC 自动派生，一份镜像刷所有设备
 _mac=$(cat /sys/class/net/eth0/address 2>/dev/null | tr -d ':')
 [ -n "$_mac" ] && uci set system.@system[0].hostname="mr42-$(echo -n "$_mac" | tail -c 6)"
 
@@ -35,10 +35,6 @@ uci set attendedsysupgrade.client.login_check_for_upgrades='1'      # 登录 LuC
 # 哑 AP 不需要防火墙：只做 L2 桥接，过路流量走网桥不经 fw4；fw4 只挡到达本机的流量，而本机管理在可信 LAN 上本就放行。
 # 关键：默认 input=REJECT（对 TCP 发 tcp-reset），lan 无 DHCP 租约时 br-lan 会掉出 lan zone → 本该救援的 mgmt IP 反被 REJECT。见下"必须知道的坑"。
 /etc/init.d/firewall disable 2>/dev/null; /etc/init.d/firewall stop 2>/dev/null
-
-# dawn 漫游守护改广播模式：默认 network_option=2(umdns) 在多台同名/共享 mgmt IP 时对等发现会冲突（见下 dawn 一节）。
-uci set dawn.@network[0].network_option='0'
-uci set dawn.@network[0].broadcast_ip='255.255.255.255'   # 受限广播，与子网无关
 
 uci commit
 exit 0
@@ -144,25 +140,34 @@ uci commit network
 - `wifi up` 会清掉临时测试时设的 `disabled` 标志，测完记得检查补回
 ### 漫游 / 频段引导：谁负责什么（重要，常被混淆）
 
+本固件走**无 steering 守护进程**方案 —— 只靠 hostapd 的 11k/v/r，客户端自主漫游。
+（曾装 dawn 做主动引导，多台实测后弃用，原因见下。）
+
 | 机制 | 作用 | 生效条件 |
 |---|---|---|
-| **dawn** | **做决定** —— 该不该切、切到哪（5G/2.4G/别的 AP） | 随固件预装并自启 |
-| **802.11k** | 给客户端邻居列表 | full wpad |
-| **802.11v** | AP 发 "建议你搬去 X"（BSS Transition） | full wpad |
-| **802.11r** | 切换时快速重认证 | full wpad **+ WPA2/WPA3-PSK** |
+| **802.11r** | AP 间切换快速重认证（FT），**完全由 hostapd 完成，不需守护进程** | full wpad **+ WPA2/WPA3-PSK** |
+| **802.11k** | 给客户端邻居列表（无控制器时只含本 AP 自己的 BSS，跨 AP 靠客户端自扫） | full wpad |
+| **802.11v** | AP 响应 BSS Transition 查询（无控制器时不主动发起引导） | full wpad |
 
-- **5G↔2.4G 自动切换 = band steering = dawn + 11v**，**不是 11r**。
-  前提：两频段**同一个 SSID**（本固件默认都叫 `OpenWrt`）。
-  dawn 默认给 5G 更高初始分（`dawn.802_11a.initial_score=100` > `802_11g=80`），
-  信号够就把客户端往 5G 引导；`dawn.global.kicking>0` 时会主动引导、必要时短暂踢下线逼其重连。
-- **AP 间漫游 = dawn + 11k/v/r**。
-- 🔴 **多 AP：dawn 默认 `network_option=2`（umdns 发现）在多台同名下失效**。mDNS 把同名 `OpenWrt.local` 当成一个实例、
-  把各台 IP（含三台共享的 mgmt `192.168.1.1`）糊在一起，dawn 认不出对等、甚至回连到自己 → 各台只看到自己的 BSS。
-  改 `network_option=0` + `broadcast_ip=255.255.255.255`（UDP 受限广播，扁平 L2 下与子网无关），
-  三台 <90s 内互相全发现（`ubus call dawn get_network` 应列出全部节点）。再配合唯一 hostname 更稳。
-- **11r 默认在配置里开着，但开放 SSID 下惰性**；设了 PSK 才激活，且它只加速切换、不做决定。
-- ⚠️ **客户端才是最终决定者**：dawn/11v 只能建议。不支持 11v 的老设备（粘性客户端）
-  只能靠 `kicking` 踢下线来逼其重选，体验不如原生配合顺滑。
+- **漫游本身照常工作**：客户端自己判断信号、决定何时切；11r 让切换快而无感。丢的只是"主动驱赶粘性客户端"。
+- **11r 默认在配置里开着，但开放 SSID 下惰性**；设了 PSK 才激活。全 fleet 的 `mobility_domain`、SSID、加密、密钥必须一致，FT 才能跨 AP。
+- ⚠️ **客户端才是最终决定者**：AP 侧只能建议。少数粘性老设备可能赖在远端 AP/2.4G 上；这种场景才需要主动 steering 守护进程。
+
+#### 为什么弃用 dawn（多 AP 实测）
+
+dawn 能做主动 band/AP steering，但在 MR42 + 本设计下不可靠，已移出固件：
+
+- 🔴 **与共享 mgmt 恢复 IP 冲突（根因）**：三台共用 `192.168.1.1` 便于直连救援。dawn 的 umdns 模式(opt2)
+  把每台都通告出 `192.168.1.1`，dawn 取首个 IP 连过去 = **连到本机自己**（`netstat` 实证
+  `192.168.1.1:xxxxx → 192.168.1.1:1026` 自连），认不出对等 → 各台只看到自己的 BSS。
+- 🔴 **广播模式(opt0)会拖垮 dawn**：能全 mesh 发现，但会收到自己发的广播 → 内存双重注册/释放
+  （logread 刷 `mem-audit … ubus.c/msghandler.c/datastorage.c`），约 20min 后进程空转 46% CPU、
+  `ubus call dawn get_network` 超时卡死。
+- **umdns 模式(opt2)稳定但收敛不全**：即便给唯一 hostname，仍是部分/不对称 mesh（实测一台看全、两台各 2/3）。
+
+**若确实需要 dawn**：给每台**唯一 mgmt IP**（如 `192.168.1.<MAC末字节>`，同一 L2 互达）或去掉共享 mgmt IP，
+再用 umdns 模式 + 唯一 hostname；代价是失去"永远 ssh 192.168.1.1"的救援便利，且此版本 dawn 发现仍偏 flaky。
+本固件权衡后选择 **保共享 .1.1 + 弃 dawn**。
 
 - 🔴 **OpenWrt 默认所有 wifi 接口 `disabled='1'`（wifi 默认关）**；配好 radio 后必须 `uci -q delete wireless.<iface>.disabled` 才会广播。
   ⚠️ 默认启用 = 广播开放 SSID 并桥接 LAN，不安全；生产环境应设 SSID+密码后再启用。
@@ -175,4 +180,4 @@ uci commit network
 - [OpenWrt: dumb AP / 网桥式 AP](https://openwrt.org/docs/guide-user/network/wifi/dumbap)
 - [OpenWrt: 802.11r/k/v 快速漫游](https://openwrt.org/docs/guide-user/network/wifi/80211r)
 - [OpenWrt: 别名接口（aliases）](https://openwrt.org/docs/guide-user/network/network_configuration)
-- [openwrt/dawn](https://github.com/openwrt/dawn) — 客户端引导守护
+- [openwrt/dawn](https://github.com/openwrt/dawn) — 客户端引导守护（本固件未采用，见上"为什么弃用 dawn"）

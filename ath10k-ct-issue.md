@@ -128,11 +128,11 @@ ath10k 的很多统计**不是驱动算的，是固件上报的**。CT 固件靠
 | `rx bitrate` | ✅ |
 | `tx failed` / `tx retries` / `tx duration` | ✅ |
 | tx/rx bytes、packets | ✅ |
-| **dawn 的全部输入** | ✅ |
+| **11k/v 漫游所需数据**（signal/rcpi/rsni 等） | ✅ |
 | 802.11k beacon report | ✅ |
 
-**dawn 完全不受影响** —— 它的决策基于 `signal` / `rcpi` / `rsni` /
-`channel_utilization` / `num_sta` / `neighbor_report`，没有一项依赖 `tx bitrate`：
+**11k/v 漫游数据完好** —— 客户端引导/邻居报告用到的 `signal` / `rcpi` / `rsni` /
+`channel_utilization` / `num_sta` / `neighbor_report` 都在，没有一项依赖 `tx bitrate`：
 
 ```json
 "signal": -35, "rcpi": 186, "rsni": 255,

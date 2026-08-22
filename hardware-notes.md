@@ -47,7 +47,7 @@ MR42 的 path 恒定：`1b500000`=5G 3×3、`1b700000`=2.4G 3×3、`1b900000`=1�
 
 `ath10k-ct` 让 5G 下行恒定 40MHz（下行~300Mbps）；换标准 `ath10k` 后恢复 80MHz（~500Mbps，+67%）。
 **必须在构建固件时替换**（`packages.md` 已含）。代价仅一个：标准驱动不报告 `tx bitrate`
-（CT 靠私有扩展多报的），`signal`/`rx bitrate`/重传计数/dawn 输入/802.11k 全部完好。
+（CT 靠私有扩展多报的），`signal`/`rx bitrate`/重传计数/11k/v 漫游输入 全部完好。
 完整排查与验证见 `ath10k-ct-issue.md`。
 
 ## irqbalance 在 IPQ806x 上无效
